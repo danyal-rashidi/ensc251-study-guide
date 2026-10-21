@@ -443,9 +443,6 @@ select.in{width:auto}
   <div id="chapterGrid"></div>
 
   <div class="notes">
-    <div class="box trap"><span class="tag">Missing slides</span>
-      <p>Your uploads jump from Slide Set 4 (Lectures 7–8) to Slide Set 6 (Lectures 11–12). <strong>Slide Set 5 (Lectures 9–10) is missing.</strong> If it's on the test, send it and it can be added as a chapter.</p>
-    </div>
     <div class="box key"><span class="tag">What the exam will ask</span>
       <p>The midterm covers <strong>all lecture and lab material</strong>. The review questions at the end of each slide set are your best hint, so all of them are flashcards in the Practice room. Slide Set 6 also says: <em>“Be able to explain the operation of and write the code for insert_head, insert_tail, remove_head, remove_tail, push, pop, search, remove.”</em> Expect to write those by hand.</p>
     </div>
@@ -2435,9 +2432,257 @@ void compute_coin(int coin_value, int& number, int& amount_left) {
   <div class="quiz" data-quiz="ch10"></div>
 </section>
 
+<!-- ===================================================== SLIDE SET 5 -->
+<section class="chapter" id="ss5" data-title="Separate compilation & namespaces" data-group="Lectures 9–10" data-num="11" hidden>
+  <div class="eyebrow">Chapter 11 · Slide Set 5</div>
+  <h1>Splitting a program into files, and namespaces</h1>
+  <div class="meta"><span class="chip">~40 min</span><span class="chip">Linker errors make sense after this</span></div>
+  <p class="lead">Real programs live in many files: a header (<code>.h</code>) that says what a class can do, an implementation (<code>.cpp</code>) that does it, and an application file that uses it. Namespaces stop names from different files clashing.</p>
+
+  <h2>Why split a program into files</h2>
+  <p>Until now everything went in one <code>.cpp</code> file. Real programs are spread over many files. Each <code>.cpp</code> file is <strong>compiled separately</strong>, then they're all <strong>linked</strong> together into one program.</p>
+  <ul>
+    <li><strong>Readability:</strong> each class lives in its own files.</li>
+    <li><strong>Reuse:</strong> write a class once and use it in many programs, just like <code>&lt;iostream&gt;</code>.</li>
+    <li><strong>Less recompiling:</strong> change one file and only that file is recompiled. Everything else is just relinked.</li>
+    <li><strong>Reliability:</strong> reused code has already been tested and debugged.</li>
+  </ul>
+  <div class="box analogy"><span class="tag">Think of it like</span><p>The predefined libraries you already use. You write <code>#include &lt;iostream&gt;</code> and use <code>cout</code> without ever seeing its code. Your own classes can work the same way.</p></div>
+
+  <h2>The interface file and the implementation file</h2>
+  <p>A class is split into two files with the <strong>same name</strong> and different endings:</p>
+  <div class="tbl"><table>
+    <tr><th>File</th><th>Holds</th></tr>
+    <tr><td><code>dtime.h</code>: the <strong>interface</strong> (a header file)</td><td>The class definition: public member function declarations with comments saying how to use them, plus the private members</td></tr>
+    <tr><td><code>dtime.cpp</code>: the <strong>implementation</strong></td><td>The bodies of the member functions, and any helper functions</td></tr>
+    <tr><td><code>timedemo.cpp</code>: the <strong>application</strong> (driver)</td><td><code>main()</code>, which uses the class</td></tr>
+  </table></div>
+  <pre class="code" data-title="dtime.h: the interface"><script type="text/x-cpp">
+#ifndef DTIME_H         // include guard: explained further down //!
+#define DTIME_H
+#include <iostream>
+using namespace std;
+
+class DigitalTime
+{
+public:
+    DigitalTime(int the_hour, int the_minute);
+    // Precondition: 0 <= the_hour <= 23 and 0 <= the_minute <= 59.
+    DigitalTime();      // midnight, 0:00
+    void advance(int minutes_added);
+    void advance(int hours_added, int minutes_added);
+    friend bool operator ==(const DigitalTime& time1, const DigitalTime& time2);
+    friend ostream& operator <<(ostream& outs, const DigitalTime& the_object);
+private:
+    int hour;           // private members are part of the implementation, //!
+    int minute;         // even though they sit in the header //!
+};
+
+#endif // DTIME_H
+</script></pre>
+  <pre class="code" data-title="dtime.cpp: the implementation"><script type="text/x-cpp">
+#include <iostream>
+#include "dtime.h"      // the implementation includes its own header //!
+using namespace std;
+
+DigitalTime::DigitalTime() : hour(0), minute(0) {}
+
+// (The slides also check that the values are in range here.)
+DigitalTime::DigitalTime(int the_hour, int the_minute) : hour(the_hour), minute(the_minute) {}
+
+void DigitalTime::advance(int minutes_added)
+{
+    int gross_minutes = minute + minutes_added;
+    minute = gross_minutes % 60;
+    hour = (hour + gross_minutes / 60) % 24;
+}
+
+void DigitalTime::advance(int hours_added, int minutes_added)
+{
+    hour = (hour + hours_added) % 24;
+    advance(minutes_added);
+}
+
+bool operator ==(const DigitalTime& time1, const DigitalTime& time2)
+{
+    return time1.hour == time2.hour && time1.minute == time2.minute;
+}
+
+ostream& operator <<(ostream& outs, const DigitalTime& the_object)
+{
+    outs << the_object.hour << ':';
+    if (the_object.minute < 10)
+        outs << '0';
+    outs << the_object.minute;
+    return outs;
+}
+</script></pre>
+  <pre class="code" data-title="timedemo.cpp: the application"><script type="text/x-cpp">
+#include <iostream>
+#include "dtime.h"      // the application includes the header too //!
+using namespace std;
+
+int main()
+{
+    DigitalTime clock(9, 30), old_clock;
+    old_clock = clock;
+    clock.advance(15);
+    cout << "You entered " << old_clock << endl;                 // 9:30
+    cout << "15 minutes later it will be " << clock << endl;     // 9:45
+    clock.advance(2, 15);
+    cout << "2 hours 15 minutes after that: " << clock << endl;  // 12:00
+    return 0;
+}
+</script></pre>
+  <h3><code>&lt; &gt;</code> or <code>" "</code>?</h3>
+  <div class="tbl"><table>
+    <tr><th>Write</th><th>For</th><th>Where the compiler looks</th></tr>
+    <tr><td><code>#include &lt;iostream&gt;</code></td><td>Predefined (standard) headers</td><td>The system's library folders</td></tr>
+    <tr><td><code>#include "dtime.h"</code></td><td>Headers you wrote</td><td>Your own folder first (the current directory), then the system folders</td></tr>
+  </table></div>
+  <p>Keep the <code>.h</code> and <code>.cpp</code> in the same folder for now. If a header lives somewhere else, put its path inside the quotes.</p>
+  <div class="box trap"><span class="tag">Never #include a .cpp file</span><p>Include only headers. The <code>.cpp</code> files are compiled separately and joined by the linker. Including one pastes its function bodies into a second file too, and the linker then finds every function twice (<code>multiple definition</code>).</p></div>
+
+  <h2>Compiling and linking</h2>
+  <p>Three different tools take part, one after the other:</p>
+  <div class="tbl"><table>
+    <tr><th>Tool</th><th>What it does</th></tr>
+    <tr><td><strong>Preprocessor</strong></td><td>Runs first and handles the <code>#</code> lines. <code>#include</code> pastes the whole header in place of that line. <code>#ifndef</code> and <code>#ifdef</code> keep or drop code.</td></tr>
+    <tr><td><strong>Compiler</strong></td><td>Turns each <code>.cpp</code> file (with its pasted headers) into an <strong>object file</strong> (<code>.o</code>), checking syntax and types.</td></tr>
+    <tr><td><strong>Linker</strong></td><td>Joins the object files and libraries into one program, connecting each function call to the one place its body is defined.</td></tr>
+  </table></div>
+  <div class="lbl">The three steps with g++</div>
+  <div class="outbox">g++ -c dtime.cpp                        step 1: compile the implementation  → dtime.o
+g++ -c timedemo.cpp                     step 2: compile the application     → timedemo.o
+g++ dtime.o timedemo.o -o timedemo      step 3: link them into one program
+
+g++ dtime.cpp timedemo.cpp -o timedemo  or all three steps in one command</div>
+  <p>Both <code>.cpp</code> files include the header. You never compile the header on its own: the preprocessor has already pasted it into each <code>.cpp</code> file that includes it, so it gets compiled as part of those.</p>
+  <div class="box key"><span class="tag">Why does #include "dtime.h" compile but not run?</span><p>The header only <strong>declares</strong> the functions: it promises they exist. That's enough for the compiler to check every call. The <strong>bodies</strong> are in <code>dtime.cpp</code>. If that file isn't compiled and linked in, the linker can't find them and stops with <code>undefined reference to `DigitalTime::advance(int)'</code>.</p></div>
+  <h3>What has to be rebuilt after a change?</h3>
+  <div class="tbl"><table>
+    <tr><th>You changed</th><th>Recompile</th><th>Then</th></tr>
+    <tr><td><code>dtime.cpp</code></td><td>Only <code>dtime.cpp</code></td><td>Relink</td></tr>
+    <tr><td><code>timedemo.cpp</code></td><td>Only <code>timedemo.cpp</code></td><td>Relink</td></tr>
+    <tr><td><code>dtime.h</code></td><td>Every <code>.cpp</code> that includes it</td><td>Relink</td></tr>
+  </table></div>
+  <p>That's what the slides mean by "you don't need to recompile the program if you change the implementation file, you just need to relink": the application's object file is reused as it is.</p>
+
+  <h2>Include guards: <code>#ifndef</code></h2>
+  <p>With several files, the same header easily gets included twice: <code>main.cpp</code> includes <code>dtime.h</code>, and also <code>alarm.h</code>, which includes <code>dtime.h</code> as well. The class would then be defined twice, and C++ doesn't allow that even when both copies are identical:</p>
+  <div class="outbox">error: redefinition of 'class DigitalTime'</div>
+  <pre class="code" data-title="Every header you write needs this"><script type="text/x-cpp">
+#ifndef DTIME_H      // "if DTIME_H is NOT defined yet..." //!
+#define DTIME_H      // ...define it now, so any later include skips all of this //!
+
+class DigitalTime
+{
+    // ...
+};
+
+#endif // DTIME_H    // end of the guarded part //!
+</script></pre>
+  <p>The first time the header is included, <code>DTIME_H</code> isn't defined, so everything is kept and <code>DTIME_H</code> becomes defined. Every later include sees that it's defined and skips straight to <code>#endif</code>. The name itself doesn't matter, but <code>FILENAME_H</code> in capitals is the usual style.</p>
+  <div class="box key"><span class="tag">Your prof expects it</span><p>"Going forward, I expect to see this in <strong>every</strong> header file you write."</p></div>
+  <p><code>#ifndef</code> ("if <em>not</em> defined") has a partner, <code>#ifdef</code> ("if defined"), which Chapter 10 used to switch debug code on with <code>#define DEBUG</code>. Both are <strong>preprocessor</strong> directives, not compiler or linker commands.</p>
+  <p><strong><code>#pragma once</code></strong> at the top of a header does the same job in one line, and every major compiler supports it. (The slides list it under C++20. Strictly it isn't part of any C++ standard, but that doesn't matter in practice.) <code>#ifndef</code> is still more flexible for anything fancier.</p>
+
+  <h2>Namespaces</h2>
+  <p>On a team of 100 programmers, two people will eventually pick the same name. A <strong>namespace</strong> is a named collection of definitions (classes, functions, variables), so the same name can mean different things in different namespaces.</p>
+  <ul>
+    <li><code>std</code> holds every name from the standard library: <code>cout</code>, <code>string</code> and so on.</li>
+    <li>Anything you don't put in a namespace goes in the <strong>global namespace</strong>. (You <em>could</em> write your own <code>cout</code> there, but that's a bad idea.)</li>
+  </ul>
+  <pre class="code" data-title="Two greetings with the same name"><script type="text/x-cpp">
+#include <iostream>
+using namespace std;
+
+namespace savitch1
+{
+    void greeting() { cout << "Hello from namespace savitch1.\n"; }
+}
+
+namespace savitch2
+{
+    void greeting() { cout << "Greetings from namespace savitch2.\n"; }
+}
+
+void big_greeting() { cout << "A Big Global Hello!\n"; }   // global namespace
+
+int main()
+{
+    {
+        using namespace savitch2;   // applies only inside these braces //!
+        greeting();                 // savitch2's version //!
+    }
+    {
+        using namespace savitch1;
+        greeting();                 // savitch1's version
+    }
+    big_greeting();                 // global: no using needed
+    return 0;
+}
+</script></pre>
+  <p>A <code>using namespace</code> directive at the top of a file applies to the whole file. Inside braces it applies only to that block, from the line where it appears to the closing brace. A namespace can also be opened in several places, even in different files: <code>dtime.h</code> and <code>dtime.cpp</code> can both say <code>namespace dtimesavitch { … }</code>, and it's all one namespace.</p>
+  <p>Give your namespaces names nobody else will pick, for example with your last name in them.</p>
+
+  <h2>Three ways to use a name from a namespace</h2>
+  <div class="tbl"><table>
+    <tr><th>Write</th><th>Called</th><th>Effect</th></tr>
+    <tr><td><code>using namespace ns1;</code></td><td>using <strong>directive</strong></td><td>Makes <em>every</em> name in <code>ns1</code> available</td></tr>
+    <tr><td><code>using ns1::fun1;</code></td><td>using <strong>declaration</strong></td><td>Makes only <code>fun1</code> available</td></tr>
+    <tr><td><code>ns1::fun1();</code></td><td><strong>qualifying</strong> the name</td><td>Uses <code>fun1</code> this once, with no <code>using</code> at all</td></tr>
+  </table></div>
+  <pre class="code" data-title="Take exactly the names you need"><script type="text/x-cpp">
+using ns1::fun1;     // fun1 from ns1
+using ns2::fun2;     // fun2 from ns2, and nothing else from either one
+
+ns1::fun1();                             // qualified call
+int get_number(std::istream& input);     // qualified type: no using namespace std needed //!
+</script></pre>
+  <div class="box trap"><span class="tag">Slide typo</span><p>The slide writes <code>int get_number(std::istream input_stream)</code>. That fails as soon as you call it, because streams can't be copied. A stream parameter must be a reference: <code>std::istream&amp;</code>.</p></div>
+  <h3>Directives versus declarations when names clash</h3>
+  <p>Say <code>ns1</code> and <code>ns2</code> both define <code>my_function</code>:</p>
+  <div class="cards2">
+    <div class="card"><h4>Two using directives</h4><p><code>using namespace ns1;</code><br><code>using namespace ns2;</code><br>Fine. A directive only <em>potentially</em> brings names in. It's only an error if you then call <code>my_function()</code> without saying which one. <code>ns1::my_function()</code> still works.</p></div>
+    <div class="card"><h4>Two using declarations</h4><p><code>using ns1::my_function;</code><br><code>using ns2::my_function;</code><br>The slides call this illegal: a declaration <em>introduces</em> the name straight away, so the two conflict.</p></div>
+  </div>
+  <div class="box key"><span class="tag">For the exam, and for real compilers</span><p>Learn the slides' reason: a using declaration introduces the name, a directive doesn't. In real g++, two clashing using declarations are an error straight away for <strong>variables</strong>. For <strong>functions</strong> they're allowed, and only the ambiguous call <code>my_function()</code> fails.</p></div>
+
+  <h2>The unnamed namespace</h2>
+  <p>A <strong>compilation unit</strong> is one <code>.cpp</code> file plus every header it includes. Each one has an <strong>unnamed namespace</strong>: a namespace grouping written with no name. Names in it are <strong>local to that compilation unit</strong>. You use them anywhere in that file without a qualifier, but no other file can see them.</p>
+  <pre class="code" data-title="dtime.cpp: hide the helper functions"><script type="text/x-cpp">
+#include <iostream>
+#include "dtime.h"
+using namespace std;
+
+namespace               // no name: only this file can see what's inside //!
+{
+    int digit_to_int(char c)
+    {
+        return static_cast<int>(c) - static_cast<int>('0');
+    }
+    // read_hour and read_minute (the helpers for >>) go here too
+}
+
+namespace dtimesavitch  // the class's own namespace, opened again here
+{
+    // DigitalTime's member functions and friends go here
+}
+</script></pre>
+  <p>Why bother? Helpers like <code>digit_to_int</code>, <code>read_hour</code> and <code>read_minute</code> exist only to implement <code>DigitalTime</code>. Inside the unnamed namespace they can't clash with anything else, so the application can define its <em>own</em> <code>read_hour</code>. The slides' <code>timedemo.cpp</code> does exactly that.</p>
+  <div class="tbl"><table>
+    <tr><th></th><th>Global namespace</th><th>Unnamed namespace</th></tr>
+    <tr><td>Needs a qualifier?</td><td>No</td><td>No</td></tr>
+    <tr><td>Visible in</td><td>Every file of the program</td><td>Only its own compilation unit</td></tr>
+  </table></div>
+
+  <div class="quiz" data-quiz="ss5"></div>
+</section>
+
 <!-- ===================================================== CH11 -->
-<section class="chapter" id="ch11" data-title="Linked lists" data-group="Lectures 11–12" data-num="11" hidden>
-  <div class="eyebrow">Chapter 11 · Slide Set 6</div>
+<section class="chapter" id="ch11" data-title="Linked lists" data-group="Lectures 11–12" data-num="12" hidden>
+  <div class="eyebrow">Chapter 12 · Slide Set 6</div>
   <h1>Nodes and linked lists</h1>
   <div class="meta"><span class="chip">~60 min</span><span class="chip">Savitch ch. 13</span><span class="chip">You will write this code on the exam</span></div>
   <p class="lead">A linked list is a chain of <strong>nodes</strong>. Each node holds some data and a pointer to the next node. The list can grow and shrink while the program runs.</p>
@@ -2725,8 +2970,8 @@ void head_insert(NodePtr& head, int the_number) {
 </section>
 
 <!-- ===================================================== CH12 -->
-<section class="chapter" id="ch12" data-title="Stacks & queues" data-group="Lectures 11–12" data-num="12" hidden>
-  <div class="eyebrow">Chapter 12 · Slide Set 6</div>
+<section class="chapter" id="ch12" data-title="Stacks & queues" data-group="Lectures 11–12" data-num="13" hidden>
+  <div class="eyebrow">Chapter 13 · Slide Set 6</div>
   <h1>Stacks and queues</h1>
   <div class="meta"><span class="chip">~45 min</span><span class="chip">Both built from a singly linked list</span></div>
   <p class="lead">A <strong>stack</strong> gives back items in reverse order (last in, first out). A <strong>queue</strong> gives them back in the same order (first in, first out).</p>
@@ -2927,8 +3172,8 @@ Queue::~Queue() {
 </section>
 
 <!-- ===================================================== CH13 -->
-<section class="chapter" id="ch13" data-title="Recursion" data-group="Lectures 13–14" data-num="13" hidden>
-  <div class="eyebrow">Chapter 13 · Slide Set 7</div>
+<section class="chapter" id="ch13" data-title="Recursion" data-group="Lectures 13–14" data-num="14" hidden>
+  <div class="eyebrow">Chapter 14 · Slide Set 7</div>
   <h1>Recursion</h1>
   <div class="meta"><span class="chip">~50 min</span><span class="chip">Savitch ch. 14 · Deitel 5.17–5.19</span></div>
   <p class="lead">A recursive function solves a problem by calling <strong>itself</strong> on a smaller version of the same problem, until the problem is small enough to answer directly.</p>
@@ -3093,8 +3338,8 @@ void BankAccount::update(int years) {  // posts 'years' years of interest
 </section>
 
 <!-- ===================================================== CH14 -->
-<section class="chapter" id="ch14" data-title="Binary search" data-group="Lectures 13–14" data-num="14" hidden>
-  <div class="eyebrow">Chapter 14 · Slide Set 7</div>
+<section class="chapter" id="ch14" data-title="Binary search" data-group="Lectures 13–14" data-num="15" hidden>
+  <div class="eyebrow">Chapter 15 · Slide Set 7</div>
   <h1>Binary search</h1>
   <div class="meta"><span class="chip">~30 min</span><span class="chip">The big recursion example</span></div>
   <p class="lead">Binary search finds a value in a <strong>sorted</strong> array by checking the middle, then throwing away the half where the value can't be.</p>
@@ -3439,6 +3684,14 @@ void print_if_big(const Money& m) {
     <dt>Macros</dt><dd><code>#ifdef DEBUG</code> · <code>assert(cond)</code> · <code>#define NDEBUG</code> before <code>&lt;cassert&gt;</code> turns asserts off</dd>
   </dl></div>
 
+  <div class="cheatgrp"><h2><svg class="ic"><use href="#i-braces"/></svg>Files and namespaces</h2><dl>
+    <dt>Files</dt><dd><code>x.h</code> = interface (class definition) · <code>x.cpp</code> = implementation · both <code>.cpp</code> files <code>#include "x.h"</code> · never include a <code>.cpp</code></dd>
+    <dt>Build</dt><dd>Preprocessor pastes headers → compiler makes a <code>.o</code> per <code>.cpp</code> → linker joins · missing <code>.cpp</code> = <code>undefined reference</code></dd>
+    <dt>Include</dt><dd><code>&lt;iostream&gt;</code> = system folders · <code>"dtime.h"</code> = your folder first</dd>
+    <dt>Guards</dt><dd><code>#ifndef DTIME_H</code> · <code>#define DTIME_H</code> · … · <code>#endif</code> in every header (or <code>#pragma once</code>)</dd>
+    <dt>Namespaces</dt><dd><code>using namespace ns;</code> = all names · <code>using ns::f;</code> = one · <code>ns::f()</code> = qualified · unnamed <code>namespace { }</code> = this file only · global = whole program</dd>
+  </dl></div>
+
   <div class="cheatgrp"><h2><svg class="ic"><use href="#i-link"/></svg>Linked lists, stacks, queues</h2><dl>
     <dt>Node</dt><dd>Data + pointer to the same type · last link NULL · empty list <code>head == NULL</code> · <code>head</code> is a pointer, not a node</dd>
     <dt>NULL vs nullptr</dt><dd>NULL is 0 (ambiguous with <code>int</code> overloads) · <code>nullptr</code> is a true null pointer</dd>
@@ -3781,6 +4034,40 @@ void print_if_big(const Money& m) {
 - `assert(cond);` → stops the program if cond is false
 * `#define NDEBUG` **before** `#include <cassert>` turns asserts off
 
+@ss5
+# box
+- Each `.cpp` is **compiled separately**, then the **linker** joins them into one program
+- Why: readability · reuse (like `<iostream>`) · less recompiling · tested code is reliable
+# sheet
+- `dtime.h` = **interface**: the class definition + how-to-use comments
+- `dtime.cpp` = **implementation**: the function bodies · same name, different ending
+- The application (`main()`) and `dtime.cpp` both `#include "dtime.h"`
+* `<iostream>` = system folders · `"dtime.h"` = your folder first
+! Never `#include` a `.cpp` file
+# steps
+- **Preprocessor** pastes headers in → **compiler** makes a `.o` per `.cpp` → **linker** joins them
+- `g++ dtime.cpp timedemo.cpp -o timedemo` does all three steps
+- A header is never compiled on its own
+! The include alone compiles but won't run → **undefined reference** (bodies not linked)
+# shield
+- Same header included twice → **redefinition of class** error
+* `#ifndef DTIME_H` / `#define DTIME_H` / … / `#endif` in **every** header
+- `#ifdef` = "if defined" (debug code) · both are **preprocessor** directives
+- `#pragma once` = one-line alternative
+# braces
+- **Namespace** = a named collection of definitions · same name, different meanings
+- `std` = the standard library · no namespace = the **global namespace**
+- `using namespace ns;` at the top = whole file · inside `{ }` = that block only
+# target
+- Directive `using namespace ns1;` → **all** names · declaration `using ns1::f;` → **one** name
+- Qualify instead: `ns1::f();` · `std::istream&`
+* Clashing directives: fine until an ambiguous call · clashing declarations: illegal (slides)
+# lock
+- **Compilation unit** = one `.cpp` + the headers it includes
+- `namespace { ... }` = **unnamed**: names local to that unit
+- Put helpers (`digit_to_int`, `read_hour`) there so other files can reuse the names
+* Global = whole program · unnamed = one file · neither needs a qualifier
+
 @ch11
 # array
 - List: **no fixed size**, fast insert/remove (change 2 pointers)
@@ -3970,6 +4257,15 @@ ch10:[
  {q:"How do you turn all asserts off?",o:["#define DEBUG","#define NDEBUG before #include <cassert>","#undef assert","assert(false);"],a:1,w:"NDEBUG = \"no debug\". It must come before the include.",x:["DEBUG means nothing to <cassert>. It's NDEBUG that turns asserts off.", "", "That deletes the macro, so every assert(...) becomes a compile error instead of being skipped.", "That stops the program right there. It doesn't turn asserts off."]},
  {q:"In Agile unit testing, when are tests written?",o:["After the code works","Before the code","Only at the end of the project","Never"],a:1,w:"Write the tests first, then just enough code to pass them.",x:["That's traditional testing. Agile (test-driven development) writes the tests first.", "", "Agile tests continuously, starting before the code exists.", "Agile depends heavily on tests."]}
 ],
+ss5:[
+ {q:"Which file holds the class definition with the member function declarations?",o:["dtime.h (the interface)", "dtime.cpp (the implementation)", "timedemo.cpp (the application)", "It's split across all three"],a:0,w:"The header holds the class definition and the comments users need. The .cpp holds the function bodies.",x:["", "dtime.cpp holds the bodies (DigitalTime::advance and so on), not the class definition.", "The application only uses the class. It #includes the header to see the definition.", "The whole class definition goes in one place: the header."]},
+ {q:"timedemo.cpp says #include \"dtime.h\" and compiles, but g++ timedemo.cpp -o timedemo fails. Why?",o:["The header has a syntax error", "dtime.cpp wasn't compiled and linked in, so the function bodies are missing (undefined reference)", "You also have to compile dtime.h", "Your own headers need < > instead of quotes"],a:1,w:"The header only declares the functions. Their bodies are in dtime.cpp, which must be compiled and linked too: g++ timedemo.cpp dtime.cpp -o timedemo.",x:["Then compiling timedemo.cpp would already have failed. Here it's the link step that fails.", "", "Headers are never compiled on their own. The preprocessor pastes them into each .cpp that includes them.", "Quotes are right for your own headers. With < > the compiler would look only in the system folders and not find dtime.h."]},
+ {q:"#include \"dtime.h\" versus #include <iostream>: what's the difference?",o:["Quotes look in your own folder first; angle brackets look in the system library folders", "There's no difference", "Quotes are for .cpp files and angle brackets for .h files", "Angle brackets compile faster"],a:0,w:"The two forms tell the compiler where to search: your folder (the current directory) first, or the predefined libraries.",x:["", "The compiler searches different places, so using the wrong one can fail to find the file.", "Both are for headers. You never #include a .cpp file.", "It's about where the file is looked for, not speed."]},
+ {q:"Which tool replaces #include \"dtime.h\" with the contents of dtime.h?",o:["The preprocessor", "The compiler", "The linker", "The operating system"],a:0,w:"The preprocessor runs before compiling and handles every # line. #include pastes the whole file in.",x:["", "The compiler only sees the result, after the header is already pasted in.", "The linker works later, joining compiled object files. It never sees #include lines.", "The operating system only runs the finished program."]},
+ {q:"What problem do #ifndef DTIME_H, #define DTIME_H and #endif solve?",o:["If the header is included twice, the class would be defined twice, which is a compile error", "They make the program run faster", "They hide the private members", "They link dtime.cpp in automatically"],a:0,w:"The first include defines DTIME_H. Every later include of the same header skips to #endif, so the class is defined only once.",x:["", "They only change what the preprocessor pastes in. Run speed is unaffected.", "public and private do that. The preprocessor knows nothing about classes.", "dtime.cpp still has to be compiled and linked. Include guards don't do that."]},
+ {q:"ns1 and ns2 both define my_function. You write using namespace ns1; and using namespace ns2;. What happens?",o:["A compile error straight away", "It's fine until you call my_function() without saying which one; that call is ambiguous", "ns2's version silently wins", "ns1's version silently wins"],a:1,w:"A using directive only makes names available. The clash is an error only when you use the ambiguous name. Write ns1::my_function() to pick one.",x:["Two using directives are legal on their own. The error appears only at an ambiguous call.", "", "Neither wins. The compiler refuses to guess.", "Neither wins. The compiler refuses to guess."]},
+ {q:"What's special about names inside namespace { ... } (the unnamed namespace) in dtime.cpp?",o:["Only dtime.cpp's compilation unit can see them", "Every file in the program can see them, like global names", "They can't be used without a qualifier", "They become private members of DigitalTime"],a:0,w:"Names in the unnamed namespace are local to their compilation unit, so other files (like the application) can reuse those names.",x:["", "That describes the global namespace. Unnamed-namespace names stay inside their own file.", "Inside their own file you use them with no qualifier at all. The namespace has no name to qualify with.", "Namespaces aren't classes. Nothing becomes a member."]}
+],
 ch11:[
  {q:"In a linked list, head is…",o:["The first node","A pointer to the first node","Always NULL","The data in the first node"],a:1,w:"head is only a pointer. If you lose it, you lose the list.",x:["head holds the first node's address. It isn't a node itself.", "", "head is NULL only when the list is empty.", "The data is inside the node, reached with head->data."]},
  {q:"Why is head passed as NodePtr& in head_insert?",o:["Speed","The function changes head itself, so the change must reach the caller","Nodes can't be copied","It's required for all pointers"],a:1,w:"By value, only a local copy of head would change, and the new node would leak.",x:["Pointers are cheap to copy, so speed isn't the reason.", "", "Nodes can be copied. The point is that the function must change the caller's head pointer itself.", "Most functions take pointers by value. head_insert needs & only because it changes head."]},
@@ -4111,6 +4407,31 @@ const FLASH = [
   ["How do you debug methodically?","Check common errors, localize with a failing test, keep an open mind, don't change code randomly, log passes and fails, assume nothing works, rubber duck, use a debugger, use a leak checker."],
   ["What are macros?","Preprocessor directives handled before compiling, e.g. #define, #ifdef, assert."],
   ["Why use #ifdef?","To include or exclude debugging code by defining or not defining a symbol like DEBUG, without deleting code."]
+ ]},
+ {set:"Slide Set 5: separate compilation, namespaces", cards:[
+  ["What is the compilation process when your code is split across several files?","Each .cpp file is compiled separately into an object file, then the linker joins them into one program. Headers aren't compiled on their own."],
+  ["How do you include a custom library (your own class) in an application program?","#include \"dtime.h\" in the application, and compile and link dtime.cpp along with it."],
+  ["Syntax for including predefined vs your own headers? Why does it matter to the compiler?","<iostream> for predefined, \"dtime.h\" for your own. It tells the compiler where to look: the system library folders, or your own folder first."],
+  ["Why does adding the #include let your program compile but not run?","The header only declares the functions. Their bodies are in the .cpp file, which must be compiled and linked in too, or the linker reports an undefined reference."],
+  ["What's the difference between the compiler and the linker?","The compiler turns each .cpp into an object file and checks syntax and types. The linker joins the object files and libraries into one program, matching each call to its definition."],
+  ["What does the preprocessor do with #include?","It pastes the whole contents of that file in place of the #include line, before compiling."],
+  ["Advantages of compiling library files separately from application files?","Reuse the class in many programs just by including its header; a change only recompiles that one file, then relinks; tested, reused code is more reliable."],
+  ["Do the header and .cpp files have to be in the same folder?","No, but keep them together for now. If they're somewhere else, put the path inside the quotes."],
+  ["What are #ifndef and #ifdef? Preprocessor, compiler or linker commands?","Preprocessor directives. They keep or skip code depending on whether a name has been #defined."],
+  ["What's the syntax for #ifndef and #ifdef?","#ifndef NAME … #endif keeps the code if NAME is NOT defined. #ifdef NAME … #endif keeps it if NAME is defined. #define NAME defines it."],
+  ["How would you use #ifdef? Give an example.","#define DEBUG at the top, then #ifdef DEBUG cout << balance; #endif. Delete the #define and all the debug code disappears."],
+  ["How would you use #ifndef? Give an example.","Include guards: #ifndef DTIME_H / #define DTIME_H / the class / #endif, so a header included twice defines its class only once."],
+  ["What is a namespace?","A named collection of definitions (classes, functions, variables), so the same name can mean different things in different namespaces."],
+  ["What is the global namespace?","Where your code goes when you don't put it in any namespace. Its names are visible in every file of the program."],
+  ["Can you use more than one namespace at once?","Yes, e.g. std plus your own. If two have the same name, qualify it (ns1::f()) or use a using declaration for the one you want."],
+  ["Can the same function name be in more than one namespace?","Yes, that's the point of namespaces: ns1::greeting and ns2::greeting are different functions."],
+  ["How should you use the using directive?","At the start of a file (applies to the whole file) or the start of a block (applies to that block only). It works from where it appears to the end of the file or block."],
+  ["How do you make something in a namespace available to code outside it?","A using directive (using namespace ns;), a using declaration (using ns::name;), or qualify it each time (ns::name)."],
+  ["What does \"qualifying names\" mean?","Writing the namespace in front of a name: std::cout, ns1::fun1()."],
+  ["Using declaration vs using directive?","using ns::name; brings in one name and introduces it right away, so two clashing ones conflict. using namespace ns; makes every name available, and only clashes if you use an ambiguous one."],
+  ["What is the unnamed namespace?","namespace { … } with no name. Its names are local to that compilation unit: the .cpp file and the headers it includes."],
+  ["Why put helper functions in the unnamed namespace?","They're only for that .cpp file, and other files (like the application) can then reuse the same names without clashing."],
+  ["How are the global and unnamed namespaces the same, and how are they different?","Same: neither needs a qualifier. Different: global names are visible in the whole program; unnamed ones only in their own compilation unit."]
  ]},
  {set:"Slide Set 6: linked lists, stacks, queues", cards:[
   ["Characteristics of linked lists?","Nodes connected by pointers, no fixed size, can grow and shrink at run time, end marked with NULL."],
@@ -5067,6 +5388,13 @@ const QK = {
   ["steps","Top-down uses stubs. Bottom-up uses drivers. Use file I/O for big batches of tests."],
   ["bug","Debug: common errors first, localize, don't change code randomly, log results, rubber duck."],
   ["shield","<code>#ifdef DEBUG</code> toggles debug code. <code>assert(cond);</code> is off with <code>#define NDEBUG</code> before <code>&lt;cassert&gt;</code>."]]],
+ ss5:["Many files, one program", [
+  ["box","Each <code>.cpp</code> is compiled separately. The linker joins them into one program."],
+  ["sheet","<code>.h</code> = interface (the class definition). <code>.cpp</code> = implementation (the function bodies)."],
+  ["steps","Preprocessor pastes headers in, compiler makes object files, linker connects each call to its body."],
+  ["shield","<code>#ifndef X_H</code> / <code>#define X_H</code> / <code>#endif</code> in every header stops double definitions."],
+  ["braces","Namespaces let one name mean different things. <code>using namespace ns;</code> = all names, <code>using ns::f;</code> = one."],
+  ["lock","The unnamed namespace keeps helper functions private to one file."]]],
  ch11:["Nodes linked by pointers", [
   ["link","Node = data + <code>Node *link</code>. The last link is <code>NULL</code>. An empty list is <code>head == NULL</code>."],
   ["ptr","<code>head</code> is only a pointer. Lose it and you lose the list. Use <code>p-&gt;data</code>."],
@@ -5117,7 +5445,7 @@ const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.quer
 const {esc, store, shuffle} = window.ENSC;
 const PICS = window.PICS || {}, QK = window.QK || {};
 const I = n => '<svg class="ic" aria-hidden="true"><use href="#i-'+n+'"/></svg>';
-const NAVI = {start:"home",b1:"term",b2:"loop",b3:"func",b4:"array",b5:"pencil",ch1:"class",ch2:"box",ch3:"lock",ch4:"spark",ch5:"family",ch6:"people",ch7:"plus",ch8:"chip",ch9:"copy",ch10:"bug",ch11:"link",ch12:"stack",ch13:"nest",ch14:"search",ansi:"palette",practice:"cards",cheat:"sheet"};
+const NAVI = {start:"home",b1:"term",b2:"loop",b3:"func",b4:"array",b5:"pencil",ch1:"class",ch2:"box",ch3:"lock",ch4:"spark",ch5:"family",ch6:"people",ch7:"plus",ch8:"chip",ch9:"copy",ch10:"bug",ss5:"braces",ch11:"link",ch12:"stack",ch13:"nest",ch14:"search",ansi:"palette",practice:"cards",cheat:"sheet"};
 const BENCHI = {unionBench:"overlap",copyBench:"copy",llBench:"link",sqBench:"stack",recBench:"nest",bsBench:"search",ansiBench:"palette",trBench:"loop",ptrBench:"ptr"};
 
 /* ---------- layout: move chapters into the reading grid ---------- */
@@ -5356,9 +5684,10 @@ const PLAN = [
   ["Chapters 6–7: friend functions, const, operator overloading.", ["ch6","ch7"]],
   ["Chapters 8–9: dynamic memory, destructor, copy constructor, operator=.", ["ch8","ch9"]],
   ["Chapter 10, then flashcards for Slide Sets 1–4.", ["ch10","practice"]],
-  ["Chapter 11: linked lists. Use the playground until you can draw every step. Then problems 8–9.", ["ch11"]],
-  ["Chapter 12: stacks and queues. Write push, pop, add and remove from memory.", ["ch12"]],
-  ["Chapters 13–14: recursion and binary search. Then problem 10.", ["ch13","ch14"]],
+  ["Chapter 11: separate compilation, include guards, namespaces. Then flashcards for Slide Set 5.", ["ss5"]],
+  ["Chapter 12: linked lists. Use the playground until you can draw every step. Then problems 8–9.", ["ch11"]],
+  ["Chapter 13: stacks and queues. Write push, pop, add and remove from memory.", ["ch12"]],
+  ["Chapters 14–15: recursion and binary search. Then problem 10.", ["ch13","ch14"]],
   ["Practice room and cheat sheet. Redo everything you got wrong.", ["practice","cheat"]]
 ];
 function buildHome(){
