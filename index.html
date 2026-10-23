@@ -212,6 +212,12 @@ details.reveal[open]>summary{border-bottom:1px solid var(--line)}
 details.reveal>summary .q{font-weight:400;color:var(--muted)}
 details.reveal>.body{padding:4px 16px 12px}
 .label-try{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--key);font-weight:700;background:var(--key-soft);border-radius:6px;padding:2px 7px;flex:none}
+/* predict / spot the bug: the code is always shown, only the answer is behind Show */
+.ask{border:1px solid var(--line);border-radius:12px;margin:12px 0;background:var(--surface);overflow:hidden}
+.ask-h{padding:11px 16px;font-weight:700;display:flex;gap:10px;align-items:center;line-height:1.4;border-bottom:1px solid var(--line)}
+.ask-h .q{font-weight:400;color:var(--muted)}
+.ask>.body{padding:0 16px}
+.ask>details.reveal{margin:0;border:0;border-top:1px solid var(--line);border-radius:0}
 
 /* buttons, inputs */
 .btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-flex;align-items:center;gap:7px;padding:8px 14px;border-radius:10px;border:1px solid var(--line-2);background:var(--surface);font-size:14.5px;font-weight:700;line-height:1.3;color:var(--ink)}
@@ -246,13 +252,15 @@ select.in{width:auto}
 
 /* quiz */
 .qz{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin:28px 0 0;box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:24px}
-.qz-h{display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line)}
+.qz-h{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line)}
 .qz-h .si{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--key-soft);color:var(--key);flex:none}
 .qz-h b{display:block;font-family:var(--f-display);font-size:1.12rem;font-weight:700}
 .qz-h small{display:block;color:var(--muted);font-size:13px}
-.qz-dots{margin-left:auto;display:flex;gap:5px}
-.qz-dots i{width:9px;height:9px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--line-2)}
-.qz-dots i.cur{border-color:var(--accent)}
+.qz-dots{margin-left:auto;display:flex}
+.qz-dots button{all:unset;box-sizing:border-box;cursor:pointer;width:24px;height:24px;display:grid;place-items:center;border-radius:7px}
+.qz-dots i{width:10px;height:10px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--line-2)}
+.qz-dots button:hover i{border-color:var(--accent)}
+.qz-dots [aria-current] i{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--accent)}
 .qz-dots i.r{background:var(--good);border-color:var(--good)}
 .qz-dots i.w{background:var(--bad);border-color:var(--bad)}
 .qz-b{padding:18px 20px 20px}
@@ -268,7 +276,9 @@ select.in{width:auto}
 .qz-fb{margin-top:12px;padding:11px 14px;border-radius:10px;background:var(--surface-2);font-size:.95rem;line-height:1.55}
 .qz-fb b.y{color:var(--good)} .qz-fb b.n{color:var(--bad)}
 .qz-fb p{margin:0} .qz-fb p+p{margin-top:8px}
-.qz-act{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.qz-act{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:14px}
+.qz-prev{margin-right:auto}
+.qz .btn:focus-visible,.qz-o:focus-visible,.qz-dots button:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
 .qz-end{text-align:center;padding:10px 0 4px}
 .qz-score{font-family:var(--f-display);font-size:2.6rem;font-weight:800;line-height:1}
 .qz-score small{font-size:1.1rem;color:var(--muted);font-weight:600}
@@ -393,6 +403,7 @@ select.in{width:auto}
   .pnc.nx{text-align:left;align-items:flex-start}
   .pnc.empty{display:none}
   .qz-b{padding:16px}
+  .qz-dots{flex-basis:100%;padding-left:48px}
   .cheatgrp dl{grid-template-columns:minmax(0,1fr)}
   .cheatgrp dd{border-top:0;padding-top:0}
   .pday{grid-template-columns:auto minmax(0,1fr)}
@@ -556,15 +567,16 @@ int main() {
   <p>Notice how <code>&lt;&lt;</code> chains: text, then a variable, then more text. Later (Chapter 7) you'll learn how to make <code>cout &lt;&lt;</code> work with your own classes.</p>
 
   <h2>Predict the output</h2>
-  <p>Cover the answer and work it out first. This is the best way to get your brain back into code.</p>
-  <details class="reveal"><summary><span class="label-try">Predict 1</span></summary><div class="body">
+  <p>Work out what each one prints before you open the answer. This is the best way to get your brain back into code.</p>
+  <div class="ask"><div class="ask-h"><span class="label-try">Predict 1</span> <span class="q">What does this print?</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 int a = 10, b = 3;
 cout << a / b << " " << a % b << " " << a * b;
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Output:</strong> <code>3 1 30</code>. 10 / 3 is 3 because both are ints, and the remainder is 1.</p>
-  </div></details>
-  <details class="reveal"><summary><span class="label-try">Predict 2</span></summary><div class="body">
+  </div></details></div>
+  <div class="ask"><div class="ask-h"><span class="label-try">Predict 2</span> <span class="q">What does this print?</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 int x = 5;
 x += 3;
@@ -572,15 +584,17 @@ x = x * 2;
 x--;
 cout << "x is " << x << endl;
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Output:</strong> <code>x is 15</code>. 5 → 8 → 16 → 15.</p>
-  </div></details>
-  <details class="reveal"><summary><span class="label-try">Predict 3</span></summary><div class="body">
+  </div></details></div>
+  <div class="ask"><div class="ask-h"><span class="label-try">Predict 3</span> <span class="q">What does this print?</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 double avg = 7 / 2;
 cout << avg;
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Output:</strong> <code>3</code>. Surprise! <code>7 / 2</code> is computed with ints first (giving 3), and only <em>then</em> stored in the double. Fix: <code>7.0 / 2</code> or <code>static_cast&lt;double&gt;(7) / 2</code>. This is the “automatic type conversion” common error.</p>
-  </div></details>
+  </div></details></div>
 
   <div class="quiz" data-quiz="b1"></div>
 </section>
@@ -695,14 +709,15 @@ do {
   </div>
 
   <h2>Predict the output</h2>
-  <details class="reveal"><summary><span class="label-try">Predict 1</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Predict 1</span> <span class="q">What does this print?</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 for (int i = 1; i <= 10; i += 3)
     cout << i << " ";
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Output:</strong> <code>1 4 7 10</code>. It starts at 1 and adds 3 while i ≤ 10.</p>
-  </div></details>
-  <details class="reveal"><summary><span class="label-try">Predict 2</span></summary><div class="body">
+  </div></details></div>
+  <div class="ask"><div class="ask-h"><span class="label-try">Predict 2</span> <span class="q">What does this print?</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 int n = 6, total = 0;
 while (n > 0) {
@@ -712,9 +727,10 @@ while (n > 0) {
 }
 cout << total;
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Output:</strong> <code>12</code>. It adds only the even numbers 6 + 4 + 2.</p>
-  </div></details>
-  <details class="reveal"><summary><span class="label-try">Predict 3</span> <span class="q">nested loops</span></summary><div class="body">
+  </div></details></div>
+  <div class="ask"><div class="ask-h"><span class="label-try">Predict 3</span> <span class="q">Nested loops. What does this print?</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 for (int row = 1; row <= 3; row++) {
     for (int col = 1; col <= row; col++)
@@ -722,8 +738,9 @@ for (int row = 1; row <= 3; row++) {
     cout << endl;
 }
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Output:</strong> a triangle of 1, 2, then 3 stars, one row per line. The inner loop runs <code>row</code> times for each round of the outer loop.</p>
-  </div></details>
+  </div></details></div>
 
   <div class="quiz" data-quiz="b2"></div>
 </section>
@@ -843,7 +860,7 @@ average(1, 2, 6);    // calls the 3-parameter version: 3
   <p>The compiler picks the version whose parameters match. You'll see this with <code>set()</code> and constructors in Chapters 3 and 4.</p>
 
   <h2>Predict the output</h2>
-  <details class="reveal"><summary><span class="label-try">Predict 1</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Predict 1</span> <span class="q">What does this print?</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 int add_one(int n) { n++; return n; }
 
@@ -853,9 +870,10 @@ int main() {
     cout << a << " " << b;
 }
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Output:</strong> <code>7 8</code>. a was passed by value, so it's unchanged. The function returned 8 into b.</p>
-  </div></details>
-  <details class="reveal"><summary><span class="label-try">Predict 2</span></summary><div class="body">
+  </div></details></div>
+  <div class="ask"><div class="ask-h"><span class="label-try">Predict 2</span> <span class="q">What does this print?</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 void mystery(int x, int& y) {
     x = x + 10;
@@ -867,8 +885,9 @@ int main() {
     cout << a << " " << b;
 }
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Output:</strong> <code>1 11</code>. Only y is a reference, so only b changes.</p>
-  </div></details>
+  </div></details></div>
 
   <div class="quiz" data-quiz="b3"></div>
 </section>
@@ -1001,15 +1020,16 @@ pp->x = 3;       // same thing, nicer to write. You'll use -> constantly in link
 </script></pre>
 
   <h2>Predict the output</h2>
-  <details class="reveal"><summary><span class="label-try">Predict 1</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Predict 1</span> <span class="q">What does this print?</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 int a[4] = {2, 4, 6, 8};
 for (int i = 3; i >= 0; i--)
     cout << a[i] << " ";
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Output:</strong> <code>8 6 4 2</code>. The loop goes backwards from the last index (3) to 0.</p>
-  </div></details>
-  <details class="reveal"><summary><span class="label-try">Predict 2</span></summary><div class="body">
+  </div></details></div>
+  <div class="ask"><div class="ask-h"><span class="label-try">Predict 2</span> <span class="q">What does this print?</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 int x = 1, y = 2;
 int *p = &x;
@@ -1018,8 +1038,9 @@ p = &y;
 *p = *p + 10;
 cout << x << " " << y;
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Output:</strong> <code>5 12</code>. p first points to x (x becomes 5), then is moved to point to y (y becomes 12).</p>
-  </div></details>
+  </div></details></div>
 
   <div class="quiz" data-quiz="b4"></div>
 </section>
@@ -3510,15 +3531,16 @@ std::cout << RED << "Queen ♥" << RESET;   // ♥ is the heart suit symbol
   <div class="tabpanel" data-panel="mix" hidden><div id="mixQuiz"></div></div>
   <div class="tabpanel bugs" data-panel="bug" hidden>
     <p style="margin-top:0">Each snippet has one main problem. Find it before you open the answer.</p>
-    <details class="reveal"><summary><span class="label-try">Bug 1</span> <span class="q">Creating an object</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Bug 1</span> <span class="q">Creating an object</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 BankAccount account();
 account.update();
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Bug:</strong> <code>BankAccount account();</code> declares a <em>function</em>, not an object. <strong>Fix:</strong> <code>BankAccount account;</code></p>
-  </div></details>
+  </div></details></div>
 
-  <details class="reveal"><summary><span class="label-try">Bug 2</span> <span class="q">A class with one constructor</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Bug 2</span> <span class="q">A class with one constructor</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 class Point {
 public:
@@ -3528,10 +3550,11 @@ private:
 };
 Point grid[10];
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Bug:</strong> an array of objects calls the <strong>default constructor</strong> for each element, but Point has none (writing any constructor removed the free one). <strong>Fix:</strong> add <code>Point();</code></p>
-  </div></details>
+  </div></details></div>
 
-  <details class="reveal"><summary><span class="label-try">Bug 3</span> <span class="q">head_insert</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Bug 3</span> <span class="q">head_insert</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 void head_insert(NodePtr head, int the_number) {
     NodePtr temp_ptr = new Node;
@@ -3540,10 +3563,11 @@ void head_insert(NodePtr head, int the_number) {
     head = temp_ptr;
 }
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Bug:</strong> <code>head</code> is passed <strong>by value</strong>, so <code>head = temp_ptr</code> only changes the local copy. The caller's list never changes, and the new node leaks. <strong>Fix:</strong> <code>NodePtr&amp; head</code>.</p>
-  </div></details>
+  </div></details></div>
 
-  <details class="reveal"><summary><span class="label-try">Bug 4</span> <span class="q">insert after</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Bug 4</span> <span class="q">insert after</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 void insert(NodePtr after_me, int the_number) {
     NodePtr temp_ptr = new Node;
@@ -3552,28 +3576,31 @@ void insert(NodePtr after_me, int the_number) {
     temp_ptr->link = after_me->link;
 }
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Bug:</strong> the last two lines are in the wrong order. The new node ends up pointing to itself and the rest of the list is lost. <strong>Fix:</strong> set <code>temp_ptr-&gt;link</code> first.</p>
-  </div></details>
+  </div></details></div>
 
-  <details class="reveal"><summary><span class="label-try">Bug 5</span> <span class="q">A destructor</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Bug 5</span> <span class="q">A destructor</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 StringVar::~StringVar() {
     delete value;
 }
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Bug:</strong> <code>value</code> points to an <strong>array</strong> made with <code>new char[...]</code>, so it must be <code>delete [] value;</code>. Without <code>[]</code> the behaviour is undefined, and probably not the whole array is freed.</p>
-  </div></details>
+  </div></details></div>
 
-  <details class="reveal"><summary><span class="label-try">Bug 6</span> <span class="q">Recursive sum</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Bug 6</span> <span class="q">Recursive sum</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 int sum_to(int n) {      // should return 1 + 2 + ... + n
     return n + sum_to(n - 1);
 }
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Bug:</strong> no base case, so infinite recursion and a stack overflow. <strong>Fix:</strong> <code>if (n &lt;= 0) return 0;</code> before the recursive line. (Check criterion 2: <code>sum_to(0)</code> = 0 is correct.)</p>
-  </div></details>
+  </div></details></div>
 
-  <details class="reveal"><summary><span class="label-try">Bug 7</span> <span class="q">Queue remove</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Bug 7</span> <span class="q">Queue remove</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 char Queue::remove() {
     char result = front->data;
@@ -3583,29 +3610,32 @@ char Queue::remove() {
     return result;
 }
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Two bugs:</strong> (1) no check for an empty queue, so <code>front-&gt;data</code> crashes. (2) If this removed the last node, <code>back</code> still points to deleted memory. Add <code>if (front == NULL) back = NULL;</code></p>
-  </div></details>
+  </div></details></div>
 
-  <details class="reveal"><summary><span class="label-try">Bug 8</span> <span class="q">A friend function definition</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Bug 8</span> <span class="q">A friend function definition</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 bool DayOfYear::equal(DayOfYear d1, DayOfYear d2) {
     return d1.month == d2.month && d1.day == d2.day;
 }
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Bug:</strong> <code>equal</code> is a <strong>friend</strong>, not a member, so its definition must not have <code>DayOfYear::</code>. <strong>Fix:</strong> <code>bool equal(DayOfYear d1, DayOfYear d2)</code>. Better still, use <code>const DayOfYear&amp;</code> parameters.</p>
-  </div></details>
+  </div></details></div>
 
-  <details class="reveal"><summary><span class="label-try">Bug 9</span> <span class="q">Overloading &lt;&lt;</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Bug 9</span> <span class="q">Overloading &lt;&lt;</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 ostream operator <<(ostream& outs, const Money& amount) {
     outs << amount.all_cents;
     return outs;
 }
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Bug:</strong> the return type must be <code>ostream&amp;</code> (a reference). Streams can't be copied, and you need the actual stream back so <code>&lt;&lt;</code> can chain.</p>
-  </div></details>
+  </div></details></div>
 
-  <details class="reveal"><summary><span class="label-try">Bug 10</span> <span class="q">A const getter</span></summary><div class="body">
+  <div class="ask"><div class="ask-h"><span class="label-try">Bug 10</span> <span class="q">A const getter</span></div><div class="body">
     <pre class="code"><script type="text/x-cpp">
 class Money {
 public:
@@ -3616,8 +3646,9 @@ void print_if_big(const Money& m) {
     if (m.get_value() > 100) cout << "big";
 }
 </script></pre>
+  </div><details class="reveal"><summary>Answer</summary><div class="body">
     <p><strong>Bug:</strong> <code>m</code> is <code>const</code>, but <code>get_value()</code> isn't a <code>const</code> member function, so the compiler refuses to call it. <strong>Fix:</strong> <code>double get_value() const;</code> in both the declaration and the definition.</p>
-  </div></details>
+  </div></details></div>
   </div>
 </section>
 
@@ -4189,14 +4220,24 @@ ch1:[
  {q:"Objects have two aspects. What are they?",o:["Public and private","State and behaviour","Classes and instances","Headers and source files"],a:1,w:"State is stored in member variables. Behaviour is implemented as member functions.",x:["Those are access levels (who may use a member), not the two aspects of an object.", "", "A class is the blueprint and an instance is an object, so neither is an aspect of an object.", "Those are how code is split into files, not parts of an object."]},
  {q:"Which one is NOT one of the three characteristics of OOP?",o:["Encapsulation","Inheritance","Polymorphism","Recursion"],a:3,w:"The three pillars are Encapsulation, Inheritance and Polymorphism. Recursion is a separate technique.",x:["Encapsulation (hiding data behind a public interface) IS one of the three.", "Inheritance (building a class from another) IS one of the three.", "Polymorphism (one call behaving differently depending on the object) IS one of the three.", ""]},
  {q:"True or false: if you write in C++, your program is object-oriented.",o:["True","False"],a:1,w:"False. Most people using OO languages still write imperative-style code. OOP is a design approach.",x:["C++ allows object-oriented design but doesn't force it. Plenty of C++ is just functions and loops in main() with no objects designed at all.", ""]},
- {q:"In DayOfYear today; what is today?",o:["A class","An object (an instance of DayOfYear)","A member function","A type qualifier"],a:1,w:"DayOfYear is the class (the blueprint). today is one object built from it.",x:["DayOfYear is the class. today is a variable of that class type, which makes it an object.", "", "There are no parentheses or body, so it isn't a function. It declares a variable.", "Type qualifiers are words like const. today is a variable."]}
+ {q:"In DayOfYear today; what is today?",o:["A class","An object (an instance of DayOfYear)","A member function","A type qualifier"],a:1,w:"DayOfYear is the class (the blueprint). today is one object built from it.",x:["DayOfYear is the class. today is a variable of that class type, which makes it an object.", "", "There are no parentheses or body, so it isn't a function. It declares a variable.", "Type qualifiers are words like const. today is a variable."]},
+ {q:"SELECT name FROM students WHERE grade > 90 is an example of which style?",o:["Imperative","Object-oriented","Declarative","Recursive"],a:2,w:"It says what result you want, not the steps to get it. That's declarative.",x:["Imperative code lists the steps. This line never says how to search.", "There are no objects or classes here.", "", "Recursion is a function calling itself. There's no function here at all."]},
+ {q:"Which pillar of OOP means keeping data and its functions together in a class, and hiding the inside details?",o:["Encapsulation","Inheritance","Polymorphism","Iteration"],a:0,w:"Encapsulation: every object looks after its own data, and outside code goes through its public functions, like a car's steering wheel and pedals.",x:["", "Inheritance is building a new class from an existing one.", "Polymorphism is one name having several meanings, depending on the type of object.", "Iteration means loops. It isn't one of the three pillars."]},
+ {q:"SavingsAccount is built from BankAccount and adds only deposit and withdraw. Which pillar is that?",o:["Encapsulation","Polymorphism","Inheritance","Declarative design"],a:2,w:"Inheritance: the new class gets the old class's behaviour for free, and you write only what's new.",x:["Encapsulation is about hiding data inside a class, not building one class from another.", "Polymorphism is one name meaning different things for different types.", "", "Declarative is a programming style, not one of the OOP pillars."]},
+ {q:"\"Poly\" means many and \"morph\" means form. In OOP, polymorphism means…",o:["A class can have many objects, each with its own state","One name can mean different things for different types","A function can call itself on smaller and smaller inputs","A program can be split across many files and namespaces"],a:1,w:"Polymorphism gives one interface (one name) for objects of different types, and each type can respond in its own way.",x:["Every class can have many objects. That's just what a class is, not polymorphism.", "", "That's recursion.", "That's separate compilation and namespaces, a different topic."]},
+ {q:"Which is a realistic constraint on a computing system?",o:["Memory size, including the stack size","The number of comments in the code","Whether the code uses OOP","How long the variable names are"],a:0,w:"Real systems are limited by processor speed, memory (and stack) size, power use and cost. Embedded systems are especially short on memory.",x:["", "The compiler ignores comments, so they use no memory when the program runs.", "The hardware doesn't care which style the code was written in.", "Names are gone after compiling. They cost nothing when the program runs."]}
 ],
 ch2:[
  {q:"union U { int i; double d; char c; }; (int = 4, double = 8, char = 1 bytes). How much memory does a U use?",o:["13 bytes","8 bytes","4 bytes","1 byte"],a:1,w:"A union only gets enough memory for its LARGEST member, because it holds one member at a time.",x:["13 bytes is every member added up, which is what a struct needs. In a union the members overlap in the same memory.", "", "4 bytes is only the int. The double wouldn't fit.", "1 byte is only the char. The int and double wouldn't fit."]},
  {q:"v.i = 42; then v.d = 3.14; on a union. What is v.i now?",o:["42","3","Garbage: it was overwritten","0"],a:2,w:"All union members share the same bytes, so writing d overwrote i.",x:["i and d share the same bytes. Writing d replaced them, so the 42 is gone.", "Nothing converts 3.14 to an int here. The double's bit pattern is read as an int, which gives a meaningless number.", "", "The bytes aren't cleared. They hold part of 3.14's bit pattern, which reads as some unrelated int."]},
  {q:"A variable declared inside a for-loop's braces has what scope?",o:["Global","Local to the whole function","Block scope","Class scope"],a:2,w:"It only exists between the braces of that block.",x:["Global variables are declared outside every function. This one is inside a block.", "It only exists between the braces where it's declared. Using it after the loop is a compile error.", "", "Class scope is for members declared inside a class."]},
  {q:"What is :: called?",o:["The dot operator","The scope resolution operator","The arrow operator","The reference operator"],a:1,w:":: is the scope resolution operator, used in definitions like DayOfYear::output().",x:["The dot operator is . (as in today.output()). It picks a member of an object.", "", "The arrow operator is -> (as in p->data). It reaches a member through a pointer.", "& is used for references and addresses. It has nothing to do with ::."]},
- {q:"Can two different struct types both have a member called quantity?",o:["No, member names must be unique in the program","Yes, each lives in its own struct's scope"],a:1,w:"Yes. super_grow.quantity and apples.quantity don't conflict.",x:["Member names only need to be unique inside their own struct. Each struct type has its own scope, so the names don't clash.", ""]}
+ {q:"Can two different struct types both have a member called quantity?",o:["No, member names must be unique in the program","Yes, each lives in its own struct's scope"],a:1,w:"Yes. super_grow.quantity and apples.quantity don't conflict.",x:["Member names only need to be unique inside their own struct. Each struct type has its own scope, so the names don't clash.", ""]},
+ {q:"Why does a struct definition need a semicolon after its closing }?",o:["Variables can be declared between the } and the ;","Every closing } in C++ needs a ;","It ends the last member's declaration","It's only needed when the struct is inside a function"],a:0,w:"C++ allows struct CDAccount { ... } account; so the ; marks where the whole declaration ends. Forget it, and the error shows up on the next line.",x:["", "Function bodies, loops and if blocks end with } and no ;. Declarations like struct and class need it.", "The last member already has its own ;, as in int term;. This one ends the whole struct declaration.", "It's always needed, wherever the struct is defined."]},
+ {q:"CDAccount a, b; a.balance = 1000; b = a; What is b.balance?",o:["0","Garbage","1000","Compile error: structs can't be assigned"],a:2,w:"= on structs copies every member at once.",x:["b gets a copy of all of a's members, so b.balance becomes 1000.", "b's old garbage is replaced by a's values.", "", "Structs can be assigned with =. It copies every member."]},
+ {q:"PersonInfo has a member Date birthday, and Date has a member year. How do you set the year of person's birthday?",o:["person.year = 2007;","person.birthday.year = 2007;","birthday.person.year = 2007;","person::birthday::year = 2007;"],a:1,w:"Read left to right: person, then its birthday member, then that Date's year.",x:["person has no year member. year is inside birthday.", "", "That's backwards. Start from the variable, person.", ":: is for classes and namespaces. Members of a variable use dots."]},
+ {q:"A struct type is defined inside one function. Which functions can declare variables of that type?",o:["Every function in the program","Every function below it in the file","None: it's a compile error","Only that function"],a:3,w:"The type has local scope, like a local variable. That's why struct and class definitions normally go outside all functions.",x:["The type only exists inside the function where it's defined.", "Position in the file doesn't matter. The type's scope is that one function.", "It's legal. It just limits who can use the type.", ""]},
+ {q:"Which is true about a struct (not a union)?",o:["Its size is its largest member","Writing one member overwrites the others","It holds all of its members at the same time","It holds only one member at a time"],a:2,w:"A struct gives every member its own memory, so all of them are stored at once. The other three describe a union.",x:["That's a union. A struct needs room for every member.", "That's a union. A struct's members don't overlap.", "", "That's a union."]}
 ],
 ch3:[
  {q:"In a class, if you write no public:/private: labels, the members are…",o:["public","private","protected","a compile error"],a:1,w:"Class members are private by default. Struct members are public by default.",x:["public is the default for a struct, not a class.", "", "protected is never the default. You only get it by writing protected:.", "Leaving the labels out is legal. Everything just becomes private."]},
@@ -4204,7 +4245,11 @@ ch3:[
  {q:"Can a member function read the private data of its own object?",o:["Yes, always","Only if it is also private","Only if it is a friend","No"],a:0,w:"Private only restricts access from OUTSIDE the class. Member functions always have access.",x:["", "Private is about code outside the class. Public and private member functions can both use private members.", "friend is for non-member functions. Member functions never need it.", "Then classes couldn't work at all: set() and output() have to read and change the private data."]},
  {q:"For a class you wrote (no operators overloaded), which works automatically?",o:["a == b","a = b","both","neither"],a:1,w:"Assignment copies all members automatically. == must be written by you.",x:["C++ doesn't write == for your classes. Without your own operator==, a == b is a compile error.", "", "Only = is automatic. == is not.", "= is automatic: the compiler copies every member for you."]},
  {q:"Why does BankAccount::output take an ostream& parameter?",o:["It's required by C++","So it can print to cout OR a file, which makes testing easier","So it runs faster","Because cout is private"],a:1,w:"Passing the stream makes the function reusable. You can write to a file and check results in batch.",x:["C++ doesn't require it. output() could use cout directly; the parameter is a design choice.", "", "The reference avoids a copy, but the reason for the parameter is choosing where the output goes (screen or file).", "cout isn't private. Any function can use it."]},
- {q:"get_month() is an example of a…",o:["Mutator","Accessor","Constructor","Friend"],a:1,w:"Accessors (\"get\") read private data. Mutators (\"set\") change it.",x:["A mutator changes data (like set_month). get_month only reads it.", "", "A constructor has the class's name and no return type, and it builds the object.", "A friend is a non-member function given access. get_month is a member."]}
+ {q:"get_month() is an example of a…",o:["Mutator","Accessor","Constructor","Friend"],a:1,w:"Accessors (\"get\") read private data. Mutators (\"set\") change it.",x:["A mutator changes data (like set_month). get_month only reads it.", "", "A constructor has the class's name and no return type, and it builds the object.", "A friend is a non-member function given access. get_month is a member."]},
+ {q:"Why is the definition written void DayOfYear::output() and not just void output()?",o:["DayOfYear:: says which class the function belongs to","It makes output() a private function of DayOfYear","It's needed because output() is a friend of DayOfYear","It calls output() on a DayOfYear object"],a:0,w:"DayOfYear:: is the type qualifier. Many classes can each have their own output(), so the definition must say which one it is.",x:["", "Access comes from the public: and private: labels inside the class, not from ::.", "It's the other way round: a friend's definition never has ClassName::.", "It's a definition, not a call. A call needs an object, like today.output()."]},
+ {q:"today.month is 10 and birthday.month is 3. What month does birthday.output() print?",o:["10","Both 10 and 3","3","Neither: output() takes no parameters"],a:2,w:"Inside a member function, month means the month of whichever object called it. birthday called it, so it prints 3.",x:["10 belongs to today. birthday.output() uses birthday's data.", "Each call works on the one object that called it.", "", "A member function doesn't need parameters for its own object's data. It uses the calling object's members."]},
+ {q:"Every member of a class is private, including all of its functions. What's the problem?",o:["Nothing outside the class can call its functions","Nothing: it's the safest possible design","The class definition itself won't compile","The private data becomes public by default"],a:0,w:"With nothing public there's no interface, so the object is useless. Normally the functions are public and the data is private.",x:["", "Safe, but useless: with nothing public, there's no interface at all.", "The class compiles. Only calls from outside it are rejected.", "Private stays private. Nothing becomes public by itself."]},
+ {q:"You change DayOfYear's private int month to three chars like \"Oct\", and rewrite the member function bodies to match. What must change in main()?",o:["Every line that uses a DayOfYear","Only the lines that call get_month()","main() must be rewritten to use chars","Nothing: main() never touched month"],a:3,w:"That's the point of private data. main() only used the public functions, so it doesn't change at all.",x:["main() only uses the interface, and the interface stayed the same.", "get_month() still exists and still returns the month number, so the code calling it doesn't change.", "main() never saw the private data, so it doesn't care how it's stored.", ""]}
 ],
 ch4:[
  {q:"What does BankAccount acct(); do?",o:["Creates acct with the default constructor","Declares a function named acct that returns a BankAccount","Creates acct with all zeros","Compile error"],a:1,w:"The empty parentheses make it a function declaration. Write BankAccount acct; instead.",x:["It looks like it, but C++ reads Type name(); as a function declaration (the \"most vexing parse\"). Write BankAccount acct; to use the default constructor.", "", "No object is created at all. It declares a function.", "It compiles: you're allowed to declare a function inside main(). The error only shows up later, when you use acct like an object."]},
@@ -4212,21 +4257,35 @@ ch4:[
  {q:"What is a constructor's return type?",o:["void","The class type","int","It has none, not even void"],a:3,w:"Constructors have no return type at all.",x:["Writing void before a constructor is a compile error. Constructors have no return type at all.", "A constructor builds an object, but you don't write any return type for it.", "Constructors have no return type, so int is wrong too.", ""]},
  {q:"acct = BankAccount(10, 50, 2.0); does what?",o:["Calls a member function on acct","Creates an anonymous object, then assigns it to acct","Is illegal","Changes acct in place with no new object"],a:1,w:"An explicit constructor call creates a nameless object, which is then copied. Mutators are more efficient.",x:["BankAccount(10, 50, 2.0) isn't called on acct. It builds a separate, unnamed object first.", "", "It's legal: you can call a constructor directly to make a temporary object.", "A temporary object is made first, then copied into acct with =."]},
  {q:"What does new BankAccount; call?",o:["The copy constructor","The default constructor","No constructor","The destructor"],a:1,w:"new uses the default constructor unless you give initializers, e.g. new BankAccount(100, 2.5).",x:["Nothing is being copied. A brand-new object is made from scratch.", "", "new always constructs the object, so a constructor always runs for a class.", "The destructor runs on delete, not on new."]},
- {q:"What is a limitation of constructor delegation?",o:["Only the default constructor can delegate","The delegated call must be the only item in the initialization section","You can delegate only once per program","Delegation needs a destructor"],a:1,w:"You can't delegate AND initialize other members in the same initializer list. Also, avoid circular delegation.",x:["Any constructor can delegate to another one, not just the default one.", "", "Each constructor can delegate. There's no once-per-program limit.", "Delegation is about constructors calling constructors. Destructors aren't involved."]}
+ {q:"What is a limitation of constructor delegation?",o:["Only the default constructor can delegate","The delegated call must be the only item in the initialization section","You can delegate only once per program","Delegation needs a destructor"],a:1,w:"You can't delegate AND initialize other members in the same initializer list. Also, avoid circular delegation.",x:["Any constructor can delegate to another one, not just the default one.", "", "Each constructor can delegate. There's no once-per-program limit.", "Delegation is about constructors calling constructors. Destructors aren't involved."]},
+ {q:"When does a constructor run?",o:["Only when you call it with a dot, like acct.BankAccount()","When the object goes out of scope","Only for objects made with new","Automatically, every time an object is created"],a:3,w:"A constructor runs by itself the moment an object is born, so the object starts with known values.",x:["You can't call a constructor with a dot. That line is illegal.", "That's when the destructor runs.", "It runs for every object: local variables, array elements and new alike.", ""]},
+ {q:"Which is a correct initialization section?",o:["BankAccount::BankAccount() : balance(0), interest_rate(0.0) { }","BankAccount::BankAccount() { : balance(0), interest_rate(0.0) }","BankAccount::BankAccount() : balance = 0, interest_rate = 0.0 { }","BankAccount::BankAccount() balance(0), interest_rate(0.0) { }"],a:0,w:"It starts with : after the ), ends before the {, and lists member(value) pairs separated by commas.",x:["", "It goes before the { of the body, not inside it.", "Each member is set with parentheses, member(value), not with =.", "It needs a colon before the first member."]},
+ {q:"Thing has int and double members and no constructors written at all. Inside main(), what does Thing t; do?",o:["Compile error: there's no constructor","Every member is set to 0","It compiles, but the members hold garbage","The copy constructor runs"],a:2,w:"With no constructors written, the compiler supplies a default constructor that does nothing. The int and double members start with whatever was in memory.",x:["It compiles. The free default constructor exists because you wrote no constructors.", "The free constructor doesn't set anything, so the members aren't 0.", "", "Nothing is being copied. t is made from scratch."]},
+ {q:"An account already exists. What should you use to change its balance and rate?",o:["Call the constructor on it: account.BankAccount(10, 50, 2.0);","Make the member variables public","Nothing: values can't change after creation","A mutator such as set()"],a:3,w:"Constructors are for starting objects. Mutators are for changing them later, and they can check the new values.",x:["That's illegal. A constructor can't be called like a member function.", "Public data breaks encapsulation: any code could set an invalid balance.", "Mutators change values after creation. That's their whole job.", ""]}
 ],
 ch5:[
  {q:"The interface of an ADT consists of…",o:["Private members and helper functions","Public member functions and the comments explaining them","The .cpp file","The member variables"],a:1,w:"The interface is everything a user needs: the public functions plus how to use them.",x:["Private members and helpers are the implementation, which users can't see or use.", "", "The .cpp file holds the implementation. The interface is the public declarations and their comments.", "Member variables are usually private, so they're part of the implementation."]},
  {q:"Which change BREAKS the ADT separation?",o:["Changing a private variable's type","Removing a private helper","Changing a public function's parameter list","Rewriting a public function's body"],a:2,w:"Public declarations are the interface. Changing them forces user code to change.",x:["Private members are implementation. User code can't see them, so it doesn't have to change.", "Users never call private helpers, so removing one doesn't affect them.", "", "If the declaration and behaviour stay the same, users don't notice a new body."]},
  {q:"In a class hierarchy diagram, arrows point…",o:["From parent to child","From child (specific) to parent (general)","Both ways","Arrows aren't used"],a:1,w:"Specific → general. Read the arrow as \"is a kind of\".",x:["They point the other way: from the specific child up to the general parent (\"is a kind of\").", "", "Each arrow points one way only, from child to parent.", "Hierarchy diagrams do use arrows, from child to parent."]},
  {q:"class SavingsAccount : public BankAccount. BankAccount is the…",o:["derived/child class","base/parent class","friend class","anonymous class"],a:1,w:"BankAccount is the base (parent). SavingsAccount is derived (child) and inherits its members.",x:["The class after the colon is the one being inherited FROM, so BankAccount is the parent. SavingsAccount is the child.", "", "Friendship is declared with the friend keyword, not with : public.", "BankAccount has a name. Anonymous classes don't."]},
- {q:"Is int an abstract data type?",o:["Yes","No"],a:0,w:"Yes. You can't see or rely on how its operations are implemented.",x:["", "An ADT just means you use it through its operations without knowing how they're implemented. That's exactly how you use int."]}
+ {q:"Is int an abstract data type?",o:["Yes","No"],a:0,w:"Yes. You can't see or rely on how its operations are implemented.",x:["", "An ADT just means you use it through its operations without knowing how they're implemented. That's exactly how you use int."]},
+ {q:"Which is NOT one of the 3 rules for making a class an ADT?",o:["Make all member variables private","Make the operations users need public, with comments explaining how to use them","Make all helper functions private","Make every member function a friend"],a:3,w:"The three rules: private member variables, documented public member functions, private helpers. Friends aren't part of it.",x:["That IS rule 1.", "That IS rule 2.", "That IS rule 3.", ""]},
+ {q:"Which of these is part of the implementation, not the interface?",o:["The public function declarations","The comments explaining how to use each public function","The body of a public member function","The name of a public function"],a:2,w:"The implementation is the private members, the helpers, and the bodies of all member functions. Users never need to see it.",x:["The public declarations are exactly the interface.", "The usage comments are part of the interface.", "", "A public function's name is part of its declaration, which is the interface."]},
+ {q:"SavingsAccount doesn't define update(), but BankAccount does. Can main() call account.update() on a SavingsAccount?",o:["No, SavingsAccount must define it again","Yes, it's inherited from BankAccount","Only inside SavingsAccount's own functions","Only if update() is a friend"],a:1,w:"A derived class automatically gets the base class's members. update() is public in BankAccount, so main() can call it on a SavingsAccount.",x:["Inherited functions don't need rewriting. That's the point of inheritance.", "", "With : public BankAccount, BankAccount's public functions stay public, so main() can call them.", "Friends have nothing to do with inheritance."]},
+ {q:"How does the SavingsAccount constructor set up the BankAccount part of the object?",o:["It copies the code of BankAccount's constructor","It can't, because BankAccount's members are private","It writes : BankAccount(dollars, cents, rate) before its body","It calls BankAccount(dollars, cents, rate) inside its body"],a:2,w:"The derived constructor hands the values to the parent's constructor in its initialization section. The parent then sets up its own private members.",x:["Copying code is exactly what inheritance avoids.", "That's why it passes the values to the parent's constructor instead of setting them itself.", "", "By the time the body runs, the BankAccount part is already built. In the body, that line only makes a nameless temporary object."]},
+ {q:"You fix a bug in BankAccount::update(). What happens to SavingsAccount and CDAccount?",o:["They get the fix automatically","You have to fix each one separately","They stop compiling","Only CDAccount gets the fix"],a:0,w:"They inherit update() instead of having their own copies, so one fix in the base class fixes every derived class. That's the code-reuse benefit.",x:["", "That's what happens with copy-paste. With inheritance there's only one update().", "Fixing a function's body doesn't change its declaration, so nothing breaks.", "Both inherit it (CDAccount through SavingsAccount), so both get the fix."]}
 ],
 ch6:[
  {q:"How is a friend function defined (outside the class)?",o:["With ClassName:: in front","Like a normal function, with no ClassName::","With the friend keyword again","Inside main()"],a:1,w:"It's not a member, so no type qualifier. friend only appears in the class definition.",x:["ClassName:: is only for member functions. A friend isn't a member, so it gets no prefix.", "", "friend appears only in the declaration inside the class, never on the definition.", "C++ doesn't let you define a function inside another function."]},
  {q:"When should an operation be a non-member (friend) function?",o:["When it uses only one object","When it uses more than one object symmetrically","When it is private","Always"],a:1,w:"One object → member. Several objects used equally → non-member.",x:["An operation on one object is naturally a member function, called as obj.f().", "", "Private is about access. It doesn't decide member versus non-member.", "Most operations are members. Only ones that use several objects equally (like == or + on two Money) work better as non-members."]},
  {q:"Why pass const Money& instead of Money?",o:["No copy is made (fast) AND the function can't change it","It allows changing the original","It's required for friends","It makes a deep copy"],a:0,w:"Reference = no copy. const = protected from changes. You get both benefits.",x:["", "const forbids changes. Plain Money& (without const) is the one that allows them.", "Friends can take their parameters any way they like.", "A reference makes no copy at all, deep or shallow."]},
  {q:"price is a const Money&. get_value() is NOT marked const. price.get_value() gives…",o:["Works fine","A compile error on most compilers","A runtime crash","A warning only, always"],a:1,w:"The compiler assumes a non-const member function might change price. Mark get_value() const.",x:["The compiler only lets you call const member functions on a const object, and get_value() isn't marked const.", "", "It's caught while compiling, so the program never gets to run.", "Standard C++ treats this as an error, not just a warning."]},
- {q:"What does double get_value() const; promise?",o:["It returns a constant","It won't change the calling object","Its parameters are const","It can only be called once"],a:1,w:"const after the parameter list = this member function doesn't modify the object.",x:["The return type is plain double. The const after the parameter list is about the object.", "", "There are no parameters. A const parameter would be written inside the parentheses.", "const says nothing about how many times a function can be called."]}
+ {q:"What does double get_value() const; promise?",o:["It returns a constant","It won't change the calling object","Its parameters are const","It can only be called once"],a:1,w:"const after the parameter list = this member function doesn't modify the object.",x:["The return type is plain double. The const after the parameter list is about the object.", "", "There are no parameters. A const parameter would be written inside the parentheses.", "const says nothing about how many times a function can be called."]},
+ {q:"equal is a friend of DayOfYear. How do you call it?",o:["today.equal(bach_birthday)","DayOfYear::equal(today, bach_birthday)","equal(today, bach_birthday)","friend equal(today, bach_birthday)"],a:2,w:"A friend isn't a member, so you call it like any normal function: no dot, and no ClassName::.",x:["The dot is for member functions. A friend has no calling object.", "equal isn't a member of DayOfYear, so there's nothing to qualify.", "", "The word friend appears only once, in the declaration inside the class."]},
+ {q:"What's the cost of making a function a friend?",o:["It runs slower than a member function","It makes the private data public to everyone","It can't take objects of the class as parameters","It may need rewriting if the private data changes"],a:3,w:"A friend reaches straight into private data, so it depends on how that data is stored. Use friends only where they make code simpler and faster.",x:["Friends skip the accessor calls, so they're often faster, not slower.", "Only the friend gets access. Everyone else still can't touch the private data.", "Friends usually take objects of the class as parameters. That's their whole purpose.", ""]},
+ {q:"A friend takes const Money& parameters. Where must const be written?",o:["Only in the declaration inside the class","Only in the definition","In both the declaration and the definition","Nowhere: references are const automatically"],a:2,w:"The declaration and the definition must match exactly. Leave const out of one, and the compiler sees two different functions.",x:["The definition must say const too, or it doesn't match the declaration.", "The declaration must say it too. The two have to match.", "", "A plain reference lets the function change the original. Only const forbids that."]},
+ {q:"You start using const Money& parameters. What else should you do?",o:["Nothing else: const parameters are enough on their own","Make all the member variables const as well","Remove the mutators, since const objects can't use them","Mark the functions that don't change the object const"],a:3,w:"Otherwise a const object can't call those functions, and the chain of functions calling functions breaks. Use const everywhere or nowhere.",x:["A call like price.get_value() on a const parameter won't compile unless get_value() is const.", "Then nothing could ever change them, not even the mutators.", "Mutators are still needed for the objects that aren't const.", ""]},
+ {q:"bool equal(DayOfYear date1, DayOfYear date2) is called. What happens to the two arguments?",o:["Both objects are copied into date1 and date2","Only their addresses are passed","Only the first one is copied","They're moved, and the originals become empty"],a:0,w:"Call-by-value copies each whole object. For big objects that's slow, which is why const references are preferred.",x:["", "Passing addresses is what call-by-reference (&) does.", "Both parameters are by value, so both are copied.", "Nothing is moved. The originals stay as they are, and copies are made."]}
 ],
 ch7:[
  {q:"Which operator can NOT be overloaded?",o:["+","==","<<","::"],a:3,w:"You can't overload . :: .* or ?:",x:["+ is one of the most commonly overloaded operators (Money + Money).", "== can be overloaded, and usually should be, to compare objects.", "<< is overloaded all the time, e.g. cout << money.", ""]},
@@ -4234,28 +4293,47 @@ ch7:[
  {q:"Money has only Money(long) and Money(long, int) constructors. What does base + 25.67 do?",o:["Compile error: no constructor takes a double","It compiles, but 25.67 becomes 25, so the 67 cents are lost","It adds exactly $25.67","It crashes when it runs"],a:1,w:"C++ converts the double to a long (25, dropping the .67), then uses Money(long). Add a Money(double) constructor to keep the cents.",x:["It looks like it should fail, but C++ may convert double to long first and then use Money(long). g++ compiles it without even a warning.","","With no Money(double), the .67 is chopped off on the way to Money(long).","It runs fine. The bug is quiet: the answer is 67 cents short."]},
  {q:"What is the correct return type for an overloaded <<?",o:["void","ostream","ostream&","Money"],a:2,w:"Return the actual stream (by reference) so << can chain. Streams can't be copied.",x:["Returning nothing breaks chaining: cout << a << b needs (cout << a) to give back the stream.", "Returning by value would copy the stream, and streams can't be copied (compile error).", "", "<< sends output to a stream, so it hands back the stream, not the Money."]},
  {q:"Can overloading change operator precedence, so a*b-c means a*(b-c)?",o:["Yes","No"],a:1,w:"Rule 5: precedence never changes.",x:["Overloading only changes what an operator does, never its precedence, its associativity or how many operands it takes.", ""]},
- {q:"The assignment operator = must be overloaded as a…",o:["friend","member function","non-member non-friend","template"],a:1,w:"= (like [] and ->) must be a member of the class.",x:["= can't be a non-member, friend or not.", "", "= must be a member function.", "Templates aren't required. The rule is simply that = must be a member."]}
+ {q:"The assignment operator = must be overloaded as a…",o:["friend","member function","non-member non-friend","template"],a:1,w:"= (like [] and ->) must be a member of the class.",x:["= can't be a non-member, friend or not.", "", "= must be a member function.", "Templates aren't required. The rule is simply that = must be a member."]},
+ {q:"Can you overload + so that it works differently on two ints?",o:["Yes, by writing operator +(int, int)","Yes, but only as a member function","No: one argument must be a class type","Yes, if it's inside a namespace"],a:2,w:"Rule 1: an overloaded operator needs at least one argument of a class type. What + does for two ints can't be changed.",x:["The compiler rejects operator +(int, int).", "Member or not, at least one operand must be a class type.", "", "Namespaces don't change this rule."]},
+ {q:"Can you create a new operator ** to raise Money to a power?",o:["Yes, if it's declared as a friend of Money","Yes, if it's written as a member function","Yes, but only as a unary operator","No: only existing operators can be overloaded"],a:3,w:"Rule 3: you can't create new operators. You can only give existing ones a meaning for your classes.",x:["Being a friend only grants access to private data. It can't invent a new operator.", "Members can only overload existing operators, and ** isn't one.", "No new operators of any kind can be created, unary or binary.", ""]},
+ {q:"Money refund = -total; Which function is called?",o:["The binary operator -(const Money&, const Money&)","The Money(long) constructor, to convert total","The unary operator -(const Money&)","None: unary minus can't be overloaded"],a:2,w:"-total has one operand, so it calls the unary version, which takes one argument. Money overloads both: binary (a - b) and unary (-a).",x:["The binary version needs two operands, like a - b. -total has only one.", "No conversion is needed. total is already a Money.", "", "Money overloads unary minus. It's legal."]},
+ {q:"Why does operator >> take Money& amount, without const?",o:["It stores what it reads in amount","Friend functions can't take const parameters","A const reference would make a copy of amount","So that >> can chain, like cin >> a >> b"],a:0,w:">> puts the value it reads into amount, so amount has to be changeable. << only prints, so it takes const Money&.",x:["", "They can. operator << and add both take const Money& parameters.", "A reference never makes a copy, const or not.", "Chaining comes from returning istream&. It has nothing to do with the Money parameter."]}
 ],
 ch8:[
  {q:"Money arr[5]; calls which constructor, how many times?",o:["Copy constructor once","Default constructor 5 times","None","Default constructor once"],a:1,w:"Each element of an array of objects is initialized with the default constructor.",x:["Nothing is being copied. Each of the 5 elements is built fresh.", "", "Every element is an object, so a constructor runs for each one.", "Each of the 5 elements gets its own constructor call, not just one."]},
  {q:"char *p = new char[20]; How do you free it?",o:["delete p;","delete [] p;","free(p);","~p;"],a:1,w:"Arrays from new[] need delete []. And never mix with free().",x:["Plain delete is for one object from new. Memory from new[] needs delete []; mixing them is undefined behaviour.", "", "free() is for malloc(). Never mix new/delete with malloc/free.", "~ on a pointer is the bitwise-not operator. It doesn't free anything."]},
  {q:"How many destructors can a class have, and with how many parameters?",o:["Many, any parameters","One, with no parameters","One, with one parameter","Two"],a:1,w:"Exactly one destructor ~ClassName() with no parameters. It can't be overloaded.",x:["A destructor can't be overloaded, so there's only one, and it takes no parameters.", "", "Destructors never take parameters.", "There's exactly one destructor per class."]},
  {q:"A function does new on a local pointer and returns without delete. What happens?",o:["The memory is freed automatically","A memory leak: the memory stays allocated","Compile error","The pointer is set to NULL"],a:1,w:"The pointer disappears, but the memory it pointed to stays allocated and unreachable.",x:["Only the pointer variable goes away when the function ends. Memory from new stays until something deletes it.", "", "It compiles fine. The compiler doesn't detect leaks.", "The pointer stops existing altogether. Nothing is set to NULL, and the memory is still allocated."]},
- {q:"Which expression is a struct that CONTAINS an array?",o:["data_point[i].velocity","my_best.time[i]"],a:1,w:"Dot first, then index = member array. Index first, then dot = array of structs.",x:["Index first, then dot: data_point is an array of structs, and each struct has a velocity member.", ""]}
+ {q:"Which expression is a struct that CONTAINS an array?",o:["data_point[i].velocity","my_best.time[i]"],a:1,w:"Dot first, then index = member array. Index first, then dot = array of structs.",x:["Index first, then dot: data_point is an array of structs, and each struct has a velocity member.", ""]},
+ {q:"StringVar(int size) does value = new char[size + 1]; Why the + 1?",o:["Room for the '\\0' that ends a C-string","Because C++ arrays start at index 1","To store the string's length at the end","So the array can grow by one later"],a:0,w:"A C-string ends with the null character '\\0'. Holding up to size characters needs size + 1 slots.",x:["", "C++ arrays start at index 0.", "Nothing stores the length. It's found by counting up to the '\\0' (that's what strlen does). max_length is how many characters fit.", "Arrays can't grow. The extra slot is for the '\\0'."]},
+ {q:"When does a local StringVar's destructor run?",o:["When the object is created","Only when you call ~StringVar() yourself","Never, unless you use delete","At the } that ends the block it was declared in"],a:3,w:"A local object is destroyed when it goes out of scope: at the closing } of its block, which for most locals is the end of the function. Its destructor runs automatically then. (An object made with new is destroyed by delete.)",x:["That's when the constructor runs.", "You never need to call it. It runs automatically.", "delete is only for objects made with new. Local objects are destroyed automatically.", ""]},
+ {q:"StringVar's private value points to memory from new. Who should free that memory?",o:["The user of the class, by writing delete value;","Nobody: setting the pointer to NULL frees it","The class itself, in its destructor","The operating system, after each function call"],a:2,w:"Users can't even see value, because it's private. The class allocated it, so the class frees it, in the destructor.",x:["value is private, so the user's code can't reach it.", "Setting a pointer to NULL only forgets the address. The memory stays allocated: a leak.", "", "The operating system only takes the memory back when the whole program ends."]},
+ {q:"TemperatureList keeps its data in double list[MAX_LIST_SIZE]. Why does it also need int size?",o:["To count how many slots are actually in use","An array member doesn't compile without one","To store the highest temperature","So the destructor knows what to delete"],a:0,w:"The array always has 50 slots, but only the first size of them hold real temperatures. add_temperature puts the new one at list[size], then adds 1 to size.",x:["", "A fixed array compiles fine on its own. size tracks how much of it is used.", "size is a count of temperatures, not a temperature.", "There's nothing to delete: a fixed array isn't from new."]},
+ {q:"void foo(int *value); and void bar(int &value); Can they change the caller's int?",o:["Only foo can, because bar works on a copy","Only bar can, because foo gets only a copy of the address","Both can, but foo writes *value and bar just writes value","Both can, and both write *value to reach the int"],a:2,w:"foo gets a copy of an address, so it reaches the int with *value. bar's reference really passes the address too, but you use it like a normal variable.",x:["A reference isn't a copy. bar's value IS the caller's int.", "foo's copy of the address still points at the caller's int, so *value = 5 changes it.", "", "Only foo needs the *. A reference is used like a normal variable: value = 5."]}
 ],
 ch9:[
  {q:"What is the correct copy constructor declaration?",o:["StringVar(StringVar other);","StringVar(const StringVar& other);","void StringVar(StringVar& other);","StringVar& copy();"],a:1,w:"One parameter of the same type, by reference (otherwise infinite recursion), normally const.",x:["Passing by value would itself need a copy, which calls the copy constructor again, forever. C++ rejects it; it must be a reference.", "", "Constructors have no return type, not even void.", "That's an ordinary member function called copy, not a constructor."]},
  {q:"When is the copy constructor NOT called?",o:["StringVar b(a);","Passing a StringVar by value","Returning a StringVar by value","b = a; where b already exists"],a:3,w:"Assignment to an existing object calls operator=, not the copy constructor.",x:["Creating b from a is exactly what the copy constructor is for.", "A by-value parameter is a new object made from the argument, so the copy constructor runs.", "Returning by value makes a copy for the caller (compilers often skip it, but it's the copy constructor's job).", ""]},
  {q:"No copy constructor. show_string(greeting) takes its parameter by value. After the call, greeting…",o:["is fine","has its char array already deleted (dangling pointer)","is a deep copy","is NULL"],a:1,w:"The shallow copy shared the array. The copy's destructor deleted it when the function ended.",x:["The parameter copy shared greeting's array (shallow copy), and its destructor deleted that array when the function ended.", "", "Without a copy constructor the default copy is shallow: only the pointer is copied.", "greeting's pointer still holds the old address. It just points to freed memory now (a dangling pointer)."]},
  {q:"Why must operator= handle a = a?",o:["It's never actually called","If it deletes its own array first, it then copies from freed memory","For speed only","Because = is a friend"],a:1,w:"Self-assignment is a special case the obvious version gets wrong. Always test it.",x:["a = a does happen, often indirectly, e.g. arr[i] = arr[j] when i equals j.", "", "It's about correctness, not speed: a naive operator= deletes the array it's about to copy from.", "= must be a member function, and that has nothing to do with self-assignment."]},
- {q:"What are the Big Three?",o:["Constructor, destructor, friend","Copy constructor, operator=, destructor","new, delete, malloc","Encapsulation, inheritance, polymorphism"],a:1,w:"If a class uses pointers + new, it needs all three.",x:["A regular constructor and friend aren't in it. The Big Three are the members that copy and free memory.", "", "Those are memory functions, not member functions you write in your class.", "Those are the three pillars of OOP, not the Big Three."]}
+ {q:"What are the Big Three?",o:["Constructor, destructor, friend","Copy constructor, operator=, destructor","new, delete, malloc","Encapsulation, inheritance, polymorphism"],a:1,w:"If a class uses pointers + new, it needs all three.",x:["A regular constructor and friend aren't in it. The Big Three are the members that copy and free memory.", "", "Those are memory functions, not member functions you write in your class.", "Those are the three pillars of OOP, not the Big Three."]},
+ {q:"What does a deep copy do that a shallow copy doesn't?",o:["Copies the pointer, so both point at the same array","Copies only the int members and skips the pointers","Moves the array over and deletes the original","Makes a new array and copies the contents into it"],a:3,w:"A deep copy gives the new object its own array with the same contents. A shallow copy only copies the address, so both objects share one array.",x:["That's exactly the shallow copy.", "Both kinds copy every member. The difference is what happens with the pointer.", "Copying never deletes the original. Both objects keep working.", ""]},
+ {q:"StringVar b = a; Which function runs?",o:["operator=","The default constructor, then operator=","The copy constructor","The destructor"],a:2,w:"Even though it has an =, this creates a NEW object, so the copy constructor runs. operator= is only for an object that already exists.",x:["operator= is for objects that already existed. b is being created here.", "C++ builds b straight from a with the copy constructor. No default construction happens first.", "", "Nothing is destroyed here."]},
+ {q:"StringVar has no operator= of its own. string1 = string2; What goes wrong?",o:["Nothing: the default = makes a full copy","It doesn't compile without an operator=","The two share one array, and string1's old one leaks","string1's old array is freed, then string2's text is copied in"],a:2,w:"The default = copies the value pointer (a shallow copy). Now changing one changes the other, and nothing points to string1's old array anymore.",x:["The default = copies member by member, so only the pointer is copied: a shallow copy.", "Every class gets a default =, so it compiles.", "", "That's what a correct operator= does. The default one frees nothing and copies only the pointer."]},
+ {q:"string1 = string2; is really the call…",o:["string1.operator=(string2)","string2.operator=(string1)","operator=(string1, string2)","StringVar(string1, string2)"],a:0,w:"= is a member function. The object on the left calls it, and the one on the right is the argument.",x:["", "It's the other way round: the left side is the calling object.", "That's how a friend would be called, but = must be a member.", "That would be a constructor call. Assignment doesn't construct anything."]},
+ {q:"Which class does NOT need its own copy constructor?",o:["A class whose members are only ints and doubles","StringVar, which holds a char* to an array from new","A class holding an int* to one int made with new","A class whose destructor calls delete"],a:0,w:"Without pointers and new, the default member-by-member copy is exactly right.",x:["", "Copying the pointer would make two StringVars share one array.", "Copying the pointer would make two objects share one int.", "If the destructor deletes memory, two objects sharing it would both delete it. That class needs a copy constructor."]}
 ],
 ch10:[
  {q:"What is a stub?",o:["A temporary program that calls the function under test","A simplified fake version of an unfinished function","A memory leak checker","A type of assert"],a:1,w:"A stub returns a simple value (like 9.99) so other functions can be tested.",x:["That's a driver. A stub is the reverse: a fake version of a function that gets called.", "", "That's a tool like AddressSanitizer or valgrind.", "assert checks a condition. A stub stands in for an unfinished function."]},
  {q:"What is a driver program?",o:["The compiler","A temporary program that calls a function to test it","A device driver","A stub"],a:1,w:"A driver (testbed) exercises a function outside the real program.",x:["The compiler only translates code. It doesn't test functions.", "", "Same word, different meaning: hardware drivers aren't involved.", "A stub is the fake function being called. The driver is the program doing the calling."]},
  {q:"Which three kinds of test cases should you cover?",o:["Fast, slow, medium","Normal, boundary/corner, illegal","Public, private, friend","Unit, integration, final"],a:1,w:"Typical inputs, edges (empty, first, last, max), and bad inputs.",x:["Test categories are about the kinds of input, not speed.", "", "Those are access levels in a class.", "Those are testing levels (how much you test at once), not kinds of test cases."]},
  {q:"How do you turn all asserts off?",o:["#define DEBUG","#define NDEBUG before #include <cassert>","#undef assert","assert(false);"],a:1,w:"NDEBUG = \"no debug\". It must come before the include.",x:["DEBUG means nothing to <cassert>. It's NDEBUG that turns asserts off.", "", "That deletes the macro, so every assert(...) becomes a compile error instead of being skipped.", "That stops the program right there. It doesn't turn asserts off."]},
- {q:"In Agile unit testing, when are tests written?",o:["After the code works","Before the code","Only at the end of the project","Never"],a:1,w:"Write the tests first, then just enough code to pass them.",x:["That's traditional testing. Agile (test-driven development) writes the tests first.", "", "Agile tests continuously, starting before the code exists.", "Agile depends heavily on tests."]}
+ {q:"In Agile unit testing, when are tests written?",o:["After the code works","Before the code","Only at the end of the project","Never"],a:1,w:"Write the tests first, then just enough code to pass them.",x:["That's traditional testing. Agile (test-driven development) writes the tests first.", "", "Agile tests continuously, starting before the code exists.", "Agile depends heavily on tests."]},
+ {q:"What is a precondition?",o:["What must be true before the function is called","What the function guarantees after it runs","A test that runs before main()","The first line of the function's body"],a:0,w:"Precondition: what must be true going in. Postcondition: what will be true when it's done.",x:["", "That's the postcondition.", "It's a comment describing what the input must be, not a test.", "It's a comment that goes with the function's declaration, not code in the body."]},
+ {q:"Top-down development replaces the stubs one at a time, testing after each. Why one at a time?",o:["The compiler can only handle one new function at a time","So a new bug is most likely in the function just added","Each stub must be deleted before the program can run","So the program never needs a driver to test it"],a:1,w:"If every test passed before the change, a new failure most likely comes from the function just added. (The slides add: in reality, not always.)",x:["The compiler can handle any number of new functions. It's about knowing where a new bug came from.", "", "Stubs run fine. That's their point: the program works while they're in place.", "Top-down doesn't use drivers anyway. Going one at a time is about finding bugs."]},
+ {q:"A test fails and you don't know why. Which of these do the slides say NOT to do?",o:["Check the common errors first","Explain the code line by line to a rubber duck","Randomly change code until it works","Use cout or a debugger to find where it first goes wrong"],a:2,w:"Random changes almost never fix the bug, and afterwards you can't tell where it was. Debug methodically.",x:["That's step 1 of debugging methodically.", "Rubber duck debugging is on the list: explaining often reveals the bug.", "", "That's localizing the error, which is on the list."]},
+ {q:"#define DEBUG is at the top, and some cout lines sit between #ifdef DEBUG and #endif. What happens if you delete the #define line?",o:["Those lines are left out of the program","The program no longer compiles","Those lines run, but print nothing","All the asserts are turned off as well"],a:0,w:"#ifdef DEBUG keeps the code only if DEBUG is defined, so one line switches all the debug output on or off.",x:["", "It still compiles. The preprocessor just drops the guarded lines.", "They aren't compiled in at all, so they can't run.", "assert is controlled by NDEBUG, not DEBUG."]},
+ {q:"Asserts are on. assert((0 < coin_value) && (coin_value < 100)); runs with coin_value = 150. What happens?",o:["Nothing: assert only prints a warning","coin_value is changed to 99","The check is skipped, because 150 is a valid int","The program stops with an error message"],a:3,w:"assert stops the program with an error message when its condition is false, and 150 < 100 is false.",x:["assert doesn't just warn. It ends the program.", "assert never changes variables. It only checks.", "The condition is checked, and it's false for 150.", ""]}
 ],
 ss5:[
  {q:"Which file holds the class definition with the member function declarations?",o:["dtime.h (the interface)", "dtime.cpp (the implementation)", "timedemo.cpp (the application)", "It's split across all three"],a:0,w:"The header holds the class definition and the comments users need. The .cpp holds the function bodies.",x:["", "dtime.cpp holds the bodies (DigitalTime::advance and so on), not the class definition.", "The application only uses the class. It #includes the header to see the definition.", "The whole class definition goes in one place: the header."]},
@@ -4264,7 +4342,10 @@ ss5:[
  {q:"Which tool replaces #include \"dtime.h\" with the contents of dtime.h?",o:["The preprocessor", "The compiler", "The linker", "The operating system"],a:0,w:"The preprocessor runs before compiling and handles every # line. #include pastes the whole file in.",x:["", "The compiler only sees the result, after the header is already pasted in.", "The linker works later, joining compiled object files. It never sees #include lines.", "The operating system only runs the finished program."]},
  {q:"What problem do #ifndef DTIME_H, #define DTIME_H and #endif solve?",o:["If the header is included twice, the class would be defined twice, which is a compile error", "They make the program run faster", "They hide the private members", "They link dtime.cpp in automatically"],a:0,w:"The first include defines DTIME_H. Every later include of the same header skips to #endif, so the class is defined only once.",x:["", "They only change what the preprocessor pastes in. Run speed is unaffected.", "public and private do that. The preprocessor knows nothing about classes.", "dtime.cpp still has to be compiled and linked. Include guards don't do that."]},
  {q:"ns1 and ns2 both define my_function. You write using namespace ns1; and using namespace ns2;. What happens?",o:["A compile error straight away", "It's fine until you call my_function() without saying which one; that call is ambiguous", "ns2's version silently wins", "ns1's version silently wins"],a:1,w:"A using directive only makes names available. The clash is an error only when you use the ambiguous name. Write ns1::my_function() to pick one.",x:["Two using directives are legal on their own. The error appears only at an ambiguous call.", "", "Neither wins. The compiler refuses to guess.", "Neither wins. The compiler refuses to guess."]},
- {q:"What's special about names inside namespace { ... } (the unnamed namespace) in dtime.cpp?",o:["Only dtime.cpp's compilation unit can see them", "Every file in the program can see them, like global names", "They can't be used without a qualifier", "They become private members of DigitalTime"],a:0,w:"Names in the unnamed namespace are local to their compilation unit, so other files (like the application) can reuse those names.",x:["", "That describes the global namespace. Unnamed-namespace names stay inside their own file.", "Inside their own file you use them with no qualifier at all. The namespace has no name to qualify with.", "Namespaces aren't classes. Nothing becomes a member."]}
+ {q:"What's special about names inside namespace { ... } (the unnamed namespace) in dtime.cpp?",o:["Only dtime.cpp's compilation unit can see them", "Every file in the program can see them, like global names", "They can't be used without a qualifier", "They become private members of DigitalTime"],a:0,w:"Names in the unnamed namespace are local to their compilation unit, so other files (like the application) can reuse those names.",x:["", "That describes the global namespace. Unnamed-namespace names stay inside their own file.", "Inside their own file you use them with no qualifier at all. The namespace has no name to qualify with.", "Namespaces aren't classes. Nothing becomes a member."]},
+ {q:"You change only a function body in dtime.cpp. What has to be rebuilt?",o:["Recompile every file, then relink","Recompile dtime.cpp, then relink","Recompile timedemo.cpp, then relink","Nothing: it shows up the next time it runs"],a:1,w:"Each .cpp is compiled separately, so timedemo.o is still good. Recompile dtime.cpp and link again. (Changing dtime.h would mean recompiling every .cpp that includes it.)",x:["Only the changed file needs compiling. The other object files are reused as they are.", "", "timedemo.cpp didn't change. It's dtime.cpp that must be recompiled.", "The program is a finished file. Nothing changes until you rebuild it."]},
+ {q:"timedemo.cpp says #include \"dtime.cpp\", and you build with g++ timedemo.cpp dtime.cpp -o timedemo. What happens?",o:["It builds and runs normally","The compiler skips the second copy","It builds, because the include guard stops the second copy","The linker finds every function twice and stops"],a:3,w:"Never #include a .cpp file. Its function bodies get pasted into timedemo.cpp too, so the linker finds each one twice (multiple definition).",x:["Including a .cpp pastes in its function bodies, so they end up defined twice.", "Each file is compiled on its own, so the compiler never sees both copies. The linker does.", "An include guard only stops a header being pasted twice into the same .cpp. Here the bodies end up in two different object files.", ""]},
+ {q:"Which line makes ONLY fun1 from ns1 available, and nothing else from ns1?",o:["using namespace ns1;","ns1::fun1();","using ns1::fun1;","namespace ns1::fun1;"],a:2,w:"A using declaration brings in exactly one name. A using directive brings in every name, and qualifying uses a name once with no using at all.",x:["That's a using directive: it makes every name in ns1 available.", "That qualifies one call. It doesn't make fun1 available on later lines.", "", "That isn't valid C++."]}
 ],
 ch11:[
  {q:"In a linked list, head is…",o:["The first node","A pointer to the first node","Always NULL","The data in the first node"],a:1,w:"head is only a pointer. If you lose it, you lose the list.",x:["head holds the first node's address. It isn't a node itself.", "", "head is NULL only when the list is empty.", "The data is inside the node, reached with head->data."]},
@@ -4272,7 +4353,11 @@ ch11:[
  {q:"(*p).data is the same as…",o:["*p.data","p.data","p->data","&p.data"],a:2,w:"-> combines dereference and dot. *p.data would mean *(p.data), which is wrong.",x:[". binds tighter than *, so this means *(p.data): it uses . on a pointer, which is a compile error.", "p is a pointer, so . doesn't work on it. Use -> (or (*p).).", "", "That's the address of p.data, which also wrongly uses . on a pointer."]},
  {q:"In insert(after_me, v), which line must come FIRST?",o:["after_me->link = temp_ptr;","temp_ptr->link = after_me->link;","Either order works"],a:1,w:"First let the new node hold on to the rest of the list, then hook it in. The other order loses the list.",x:["Doing this first overwrites after_me->link, the only pointer to the rest of the list, so the new node can't link to it.", "", "Order matters: hooking the new node in first loses the rest of the list."]},
  {q:"Why was nullptr added in C++11?",o:["NULL was too slow","NULL is 0, so f(NULL) is ambiguous between f(int) and f(int*)","NULL doesn't work with classes","For linked lists only"],a:1,w:"nullptr is a true null pointer, not the integer 0.",x:["NULL is just 0. It isn't slow.", "", "NULL works with pointers to classes. The problem is that it's an int, which confuses overloading.", "nullptr is for every kind of pointer, not just linked lists."]},
- {q:"NodePtr head2 = head1; gives you…",o:["Two independent lists","Two pointers to the SAME list","An empty list","A compile error"],a:1,w:"Only the address is copied (shallow). Changes through either pointer affect the same nodes.",x:["Copying a pointer doesn't copy any nodes. Both pointers aim at the same first node.", "", "head2 gets head1's address, so it sees the whole list.", "Assigning one pointer to another of the same type is legal."]}
+ {q:"NodePtr head2 = head1; gives you…",o:["Two independent lists","Two pointers to the SAME list","An empty list","A compile error"],a:1,w:"Only the address is copied (shallow). Changes through either pointer affect the same nodes.",x:["Copying a pointer doesn't copy any nodes. Both pointers aim at the same first node.", "", "head2 gets head1's address, so it sees the whole list.", "Assigning one pointer to another of the same type is legal."]},
+ {q:"How do you know here points at the last node of a list?",o:["here == NULL","here->data == 0","here->link == NULL","here == head"],a:2,w:"The last node's link is NULL: there's nothing after it. here == NULL would mean you've already gone past the end.",x:["here == NULL means here isn't pointing at any node: you've gone past the end.", "The data can be any value, including 0.", "", "here == head means you're at the first node."]},
+ {q:"In head_insert, why not skip temp_ptr and write head = new Node; directly?",o:["It works the same: temp_ptr is just for style","new Node can't be assigned straight to head","The new node would have nowhere to store data","Nothing would point to the old list anymore"],a:3,w:"Once head points at the new node, nothing points at the old list: the whole old list is lost, a memory leak. temp_ptr holds the new node while head still holds the old list.",x:["temp_ptr is needed. It keeps the new node while head still points at the old list.", "That line is legal, which is what makes the mistake easy.", "The new node has its data and link like any other. The problem is the lost list.", ""]},
+ {q:"remove_after runs discard = before->link; before->link = discard->link; delete discard; What if the last line were missing?",o:["The node would stay in the list","The list would be broken in two","The removed node's memory would leak","Nothing: the node is freed automatically"],a:2,w:"The list is fine, because the node has been bypassed. But nothing points to it anymore, and its memory is never given back.",x:["before->link = discard->link already skips over it, so it's out of the list.", "That same line reconnects the list around the node.", "", "Memory from new is only freed by delete. Nothing frees it automatically."]},
+ {q:"Which is FASTER with a linked list than with an array?",o:["Inserting a new item in the middle","Reaching item number 50","Using an index like a[50]","Finding the size without counting"],a:0,w:"Inserting into a list changes two pointers. In an array, every later element has to shift over. Reaching item 50 is the reverse: instant in an array, slow in a list.",x:["", "A list has to walk through 50 nodes. An array jumps there instantly.", "Lists have no indexes. You follow the links from the head.", "A list has to be walked to count its nodes. An array's size is fixed and known."]}
 ],
 ch12:[
  {q:"A Pez dispenser behaves like a…",o:["Queue (FIFO)","Stack (LIFO)","Binary tree","Array"],a:1,w:"Last in, first out: you take the candy that was loaded last.",x:["In a queue the first one in is the first one out. A Pez dispenser gives you the last candy loaded.", "", "A tree branches. A dispenser is one straight pile.", "An array lets you reach any position. A dispenser only gives you the top."]},
@@ -4280,7 +4365,11 @@ ch12:[
  {q:"Why does a queue keep a back (tail) pointer?",o:["To make remove faster","So add doesn't have to walk the whole list","Stacks need it too","For the destructor"],a:1,w:"Without it, each add would traverse the entire list to find the end.",x:["Removing happens at the front, which the front pointer already reaches instantly.", "", "Stacks only work at the top (head), so they don't need a back pointer.", "The destructor walks from the front anyway."]},
  {q:"Stack::push is exactly the same logic as…",o:["tail_insert","head_insert","search","remove_after"],a:1,w:"All stack activity happens at the head (top).",x:["A stack pushes at the top, which is the head, not the tail.", "", "push adds a node. search only looks for one.", "remove_after takes a node out. push adds one."]},
  {q:"Queue::remove takes out the LAST node. What else must it do?",o:["Nothing","Set back = NULL","Set front = back","Call the copy constructor"],a:1,w:"Otherwise back points to deleted memory and empty() gives the wrong answer.",x:["back would still hold the deleted node's address (dangling), and the next add would use it.", "", "Both should become NULL. Copying back into front would make front dangle too.", "Nothing is being copied here."]},
- {q:"Does the Stack class need a copy constructor?",o:["No, the default copy is fine","Yes: it uses pointers and new, so the default copy would share nodes"],a:1,w:"Same Big Three rule as StringVar.",x:["The default copy copies only the top pointer, so two stacks would share the same nodes (and both delete them later).", ""]}
+ {q:"Does the Stack class need a copy constructor?",o:["No, the default copy is fine","Yes: it uses pointers and new, so the default copy would share nodes"],a:1,w:"Same Big Three rule as StringVar.",x:["The default copy copies only the top pointer, so two stacks would share the same nodes (and both delete them later).", ""]},
+ {q:"Add A, B, C to a queue, then remove one item. What comes out?",o:["C","B","A","All three at once"],a:2,w:"FIFO: the first item added (A) is the first one removed, like a line at a cashier.",x:["That's stack order (last in, first out).", "B is second in line. A goes first.", "", "remove takes out one item at a time."]},
+ {q:"Queue::add puts the first item into an EMPTY queue. What must be true afterwards?",o:["front and back both point to the new node","front points to the new node and back is still NULL","back points to the new node and front is still NULL","Only the new node's link has changed"],a:0,w:"With one item, it's both the first and the last, so front and back both point to it.",x:["", "Then empty(), which checks back == NULL, would still say the queue is empty.", "Then remove() would crash on front->data.", "The queue's own pointers must change, or it can't find the node at all."]},
+ {q:"What does the Stack destructor do?",o:["Nothing: the nodes are freed automatically","Deletes the top node, which frees the rest","Sets top to NULL, which frees the nodes","Pops every item, which deletes every node"],a:3,w:"Each pop deletes one node, so popping until the stack is empty frees them all. Without it, every node would leak.",x:["When a Stack is destroyed, only its top pointer goes away. The nodes stay until something deletes them.", "Deleting one node doesn't touch the others. Each one needs its own delete.", "Setting top to NULL just loses the nodes: a leak.", ""]},
+ {q:"What does the slides' Stack::pop() do if the stack is empty?",o:["Returns '\\0'","Returns the last item again","Prints an error message and ends the program","Nothing: the precondition says it can't happen"],a:2,w:"pop's precondition is \"the stack is not empty\", but the slides' version checks anyway: it prints an error and calls exit(1).",x:["It doesn't return anything. It stops the program first.", "That item was already popped and deleted. There's nothing to return.", "", "The precondition is the caller's promise, but this pop still checks and stops the program safely."]}
 ],
 ch13:[
  {q:"What does write_vertical(123) print?",o:["3 2 1 (one per line)","1 2 3 (one per line)","123","6"],a:1,w:"It prints write_vertical(12) first (which prints 1, then 2), then 123 % 10 = 3.",x:["The recursive call comes BEFORE the output, so the digits of 12 print first. The 3 prints last.", "", "Each call prints one digit on its own line, not all three together.", "Nothing adds the digits up. It prints them."]},
@@ -4288,14 +4377,23 @@ ch13:[
  {q:"Which is usually faster and uses less memory?",o:["Recursive","Iterative"],a:1,w:"Recursion makes many function calls, each with its own stack frame.",x:["Each recursive call adds a stack frame and call overhead. A loop reuses the same variables.", ""]},
  {q:"Criterion 3 for recursion is like which kind of math proof?",o:["Proof by contradiction","Proof by induction","Direct proof","No proof"],a:1,w:"If the smaller cases are correct, the whole thing is correct, just like the inductive step.",x:["Contradiction assumes the opposite and finds a conflict. Criterion 3 relies on smaller cases being correct, which is induction.", "", "A direct proof doesn't rely on smaller cases being correct.", "The three criteria together are a proof that the recursion is correct."]},
  {q:"Inside update(int years), the call update() (no arguments) is…",o:["Recursion","Overloading: a different function with the same name","Infinite recursion","A constructor call"],a:1,w:"Only update(years - 1) is the recursive call.",x:["Recursion means calling the same function. update() with no arguments is a different overload, not update(int).", "", "It isn't calling itself, so there's no recursion at all.", "update is a member function, not a constructor."]},
- {q:"What does power(5, 0) return?",o:["0","5","1","error"],a:2,w:"The base case: x^0 = 1.",x:["Anything to the power 0 is 1. That's the base case.", "5 is 5 to the power 1. With exponent 0 the answer is 1.", "", "Exponent 0 is the base case, not an error."]}
+ {q:"What does power(5, 0) return?",o:["0","5","1","error"],a:2,w:"The base case: x^0 = 1.",x:["Anything to the power 0 is 1. That's the base case.", "5 is 5 to the power 1. With exponent 0 the answer is 1.", "", "Exponent 0 is the base case, not an error."]},
+ {q:"What does power(2, 3) return?",o:["6","9","8","5"],a:2,w:"power(2, 3) = power(2, 2) × 2 = (power(2, 1) × 2) × 2 = ((1 × 2) × 2) × 2 = 8.",x:["That's 2 × 3. power multiplies 2 by itself 3 times: 2 × 2 × 2.", "That's 3 squared. Here x = 2 and n = 3, so it's 2 cubed.", "", "That's 2 + 3."]},
+ {q:"In write_vertical, the two lines in the else are swapped, so cout << (n % 10) comes BEFORE write_vertical(n / 10). What does write_vertical(123) print?",o:["1 2 3, one per line","123 on one line","3 2 1, one per line","Only 3"],a:2,w:"Now each call prints its last digit first, then handles the rest: 3, then 2, then 1.",x:["That's the original order, where the recursive call comes first.", "Each call still prints one digit on its own line.", "", "The recursive call still happens, so 2 and 1 print too."]},
+ {q:"Each recursive call to write_vertical gets…",o:["Its own stack frame, with its own copy of n","The same n as every other call","One global n shared by all the calls","A reference to the n of the call before it"],a:0,w:"Every call has its own frame holding its own n. A paused call keeps its n while the inner calls run.",x:["", "Each call gets its own n. That's how 123, 12 and 1 can all exist at the same time.", "n is a parameter, so it's local to each call.", "n is passed by value, so each call gets its own copy, not a reference."]},
+ {q:"Can every recursive function be rewritten with loops instead?",o:["No: some problems can only be solved recursively","Only void functions","Only functions with one base case","Yes: recursion is never strictly necessary"],a:3,w:"Anything recursive has an iterative version. Recursion is a choice that often makes the code shorter and easier to read.",x:["Every recursive function has an iterative version, even if it's longer.", "Functions that return values, like power, can be written with loops too.", "The number of base cases doesn't matter.", ""]}
 ],
 ch14:[
  {q:"Binary search requires the array to be…",o:["Short","Sorted","Full","Made of ints"],a:1,w:"It relies on knowing which half the key must be in.",x:["It works on arrays of any length. Long ones are where it shines.", "", "It only searches between first and last, so the array doesn't need to be full.", "Any type that can be compared works."]},
  {q:"At most how many comparisons for 1000 elements?",o:["1000","500","About 10","2"],a:2,w:"It halves each time: about log2(1000) ≈ 10.",x:["That's sequential search's worst case. Binary search halves the range each time.", "Halving once leaves 500, but it keeps halving: 1000, 500, 250 … 1 is about 10 steps.", "", "Two halvings still leave about 250 elements to search."]},
  {q:"What are the two base cases?",o:["first == 0 and last == 0","first > last (not found), or key == a[mid] (found)","mid == 0 and mid == last","There is only one"],a:1,w:"Nowhere left to search, or found at mid.",x:["Those are specific index values. They don't mean \"nothing left\" or \"found\".", "", "mid's position doesn't tell you whether the key was found.", "There are two ways to stop: you found it, or there's nothing left to search."]},
  {q:"If key < a[mid], the next call is…",o:["search(a, mid+1, last, …)","search(a, first, mid-1, …)","search(a, first, mid, …)","search(a, 0, last, …)"],a:1,w:"The key can only be in the left half: first to mid-1.",x:["That's the right half, which is for key > a[mid].", "", "mid was already checked. Including it again wastes a step and can loop forever when first equals mid.", "That restarts with almost the whole array, so the search never narrows."]},
- {q:"Why are found and location reference parameters?",o:["To save memory","So the answer gets back to the original caller through all the recursive calls","They're constants","For overloading"],a:1,w:"Each call has its own scope, so results must be sent back explicitly.",x:["A bool and an int are tiny. The reason is getting the answer back.", "", "The function changes them, so they can't be constants.", "Overloading isn't involved."]}
+ {q:"Why are found and location reference parameters?",o:["To save memory","So the answer gets back to the original caller through all the recursive calls","They're constants","For overloading"],a:1,w:"Each call has its own scope, so results must be sent back explicitly.",x:["A bool and an int are tiny. The reason is getting the answer back.", "", "The function changes them, so they can't be constants.", "Overloading isn't involved."]},
+ {q:"a = {15, 20, 35, 41, 57, 63, 75, 80, 85, 90}, indexes 0 to 9. Searching for 63, which element is compared first?",o:["15, the first element","63","90, the last element","57, at a[4]"],a:3,w:"The first mid is (0 + 9) / 2 = 4 (integer division), and a[4] is 57. 63 > 57, so the search moves to the right half.",x:["Binary search starts in the middle, not at the front.", "63 is what you're looking for. The first comparison is with the middle element.", "It starts in the middle, not at the end.", ""]},
+ {q:"Why does search have the extra parameters first and last?",o:["They mark the part of the array still being searched","They hold the smallest and largest values in the array","They tell the caller where the key was found","They count the comparisons"],a:0,w:"Recursion often needs a more general problem. first and last describe the window, so a call can search just one half.",x:["", "They're indexes, not values. They mark where the window starts and ends.", "That's location's job. first and last mark the window still being searched.", "Nothing in search counts comparisons."]},
+ {q:"In the iterative version, what replaces the recursive call search(a, first, mid - 1, ...)?",o:["first = mid - 1;","mid = mid - 1;","last = mid - 1;","return mid - 1;"],a:2,w:"The loop goes round again with a smaller window. Moving last to mid - 1 does the same job as the recursive call on the left half.",x:["first marks the left end of the window. For the left half, it's last that moves.", "mid is worked out again at the top of every round, so changing it does nothing useful.", "", "Returning ends the search without finding anything."]},
+ {q:"final_index is the last index of a. Which call searches the whole array?",o:["search(a, 1, final_index, key, found, location);","search(a, final_index, 0, key, found, location);","search(a, 0, final_index, key, found, location);","search(a, 0, final_index + 1, key, found, location);"],a:2,w:"The first window is the whole array: first = 0 and last = final_index.",x:["Arrays start at index 0, so starting at 1 skips a[0].", "first must be the low end. With first > last, it says \"not found\" straight away.", "", "final_index + 1 is past the end of the array."]},
+ {q:"a = {15, 20, 35, 41, 57, 63, 75, 80, 85, 90}, indexes 0 to 9. You search for 50, which isn't there. When the search stops, what are first and last?",o:["first = 3, last = 3","first = 4, last = 4","first = 0, last = -1","first = 4, last = 3"],a:3,w:"The windows go 0..9 (mid 57), 0..3 (mid 20), 2..3 (mid 35), 3..3 (mid 41), then 4..3. first > last, so it stops: 50 would sit between a[3] = 41 and a[4] = 57.",x:["That window still has one element, a[3] = 41. 50 > 41, so first moves to 4.", "last became 3 at the first step (50 < 57). After that, 50 is bigger than every middle element, so only first moves.", "That's where a key smaller than 15 would end. 50 is between 41 and 57, so the search ends between them.", ""]}
 ]
 };
 
@@ -4482,34 +4580,60 @@ b1:[
  {q:"What does 47 % 10 give?",o:["4","7","4.7","0"],a:1,w:"% is the remainder. % 10 gives the last digit.",x:["That's 47 / 10 (integer division).", "", "% gives a whole-number remainder, never a fraction.", "0 would mean 47 divides evenly by 10."]},
  {q:"Which line correctly declares a whole-number variable starting at 0?",o:["int count = 0;","count int = 0;","int count == 0;","integer count = 0"],a:0,w:"Type, then name, then = value, then a semicolon.",x:["", "The type comes first, then the name.", "== compares. To give a starting value, use a single =.", "The type is spelled int, and the line needs a ; at the end."]},
  {q:"int total; total = total + 5; What is total?",o:["5","0","Garbage: total was never initialized","Compile error"],a:2,w:"Uninitialized variables hold garbage. Always start with int total = 0;",x:["That would need total to start at 0, but it was never given a value.", "Local variables aren't automatically 0 in C++. They hold whatever was in memory.", "", "It compiles (maybe with a warning). The bug only shows when it runs."]},
- {q:"Where does a C++ program start running?",o:["The first line of the file","#include","main()","The first function defined"],a:2,w:"Execution always begins at main().",x:["The first lines are usually #include and declarations, which don't run.", "#include is handled before compiling. It doesn't run at all.", "", "Other functions run only when something calls them. main() is always first."]}
+ {q:"Where does a C++ program start running?",o:["The first line of the file","#include","main()","The first function defined"],a:2,w:"Execution always begins at main().",x:["The first lines are usually #include and declarations, which don't run.", "#include is handled before compiling. It doesn't run at all.", "", "Other functions run only when something calls them. main() is always first."]},
+ {q:"Your program compiles and runs to the end, but prints the wrong answer. What kind of error is that?",o:["A compile error","A syntax error","A logic error","A missing #include"],a:2,w:"It compiled and didn't crash, so the code is legal C++. The steps themselves are wrong: that's a logic error.",x:["Compile errors stop the build, so there would be no program to run.", "A syntax error is a kind of compile error. The program wouldn't have built.", "", "The compiler catches that one (cout would be undeclared), so nothing would run."]},
+ {q:"Which line stores one character correctly?",o:["char grade = \"A\";","char grade = 'A';","char grade = A;","char grade = 'A'"],a:1,w:"One character goes in single quotes. Double quotes make a string. And every statement ends with ;.",x:["\"A\" in double quotes is a string, not a char. The compiler rejects it.", "", "Without quotes, A is read as a variable name, and there's no variable called A.", "It's missing the ; at the end."]},
+ {q:"Which expression gives 3.5?",o:["7 / 2","7 % 2","static_cast<double>(7 / 2)","7.0 / 2"],a:3,w:"If either number is a double, C++ does real division: 7.0 / 2 is 3.5.",x:["Both are ints, so it's integer division: 3.", "% gives the remainder, which is 1.", "7 / 2 is worked out first with ints, giving 3. The cast only turns that 3 into 3.0.", ""]},
+ {q:"Which is a legal variable name?",o:["interest_rate","2nd_rate","interest rate","double"],a:0,w:"Names use letters, digits and _. They can't start with a digit, and they can't be a keyword.",x:["", "A name can't start with a digit.", "Spaces aren't allowed in a name. Use _ instead.", "double is a keyword (a type), so it can't be a name."]},
+ {q:"int age; cin >> age; What does the second line do?",o:["Prints the value of age","Reads a number from the keyboard into age","Compares what the user types with age","Adds what the user types to age"],a:1,w:"cin >> reads from the keyboard. Read >> as \"goes into\": the typed value goes into age.",x:["Printing is cout <<. cin is for input.", "", "Nothing is compared. The typed value replaces whatever age held.", "The typed value replaces the old one. Nothing is added."]}
 ],
 b2:[
  {q:"How many times does for (int i = 0; i < 4; i++) run?",o:["3","4","5","Forever"],a:1,w:"i = 0, 1, 2, 3. When i becomes 4, the condition is false.",x:["i = 0 counts too: 0, 1, 2, 3 is four times.", "", "When i is 4, i < 4 is false, so the body doesn't run a fifth time.", "i++ raises i every time, so i < 4 eventually becomes false."]},
  {q:"if (x = 10) … What actually happens?",o:["It compares x with 10","It assigns 10 to x, and the if always runs","Compile error always","Nothing"],a:1,w:"One = assigns. Use == to compare.",x:["Comparing needs ==. A single = assigns.", "", "It compiles (GCC may warn). That's what makes it a sneaky bug.", "Something does happen: x becomes 10, and the if body runs."]},
  {q:"Which condition means \"age is between 13 and 19, inclusive\"?",o:["age >= 13 || age <= 19","age >= 13 && age <= 19","13 <= age <= 19 (in C++)","age > 13 && age < 19"],a:1,w:"&& means both must be true. (13 <= age <= 19 doesn't work the way it looks in C++.)",x:["With OR, every age passes. For example, 50 >= 13 is already true.", "", "C++ works out 13 <= age first, giving true or false (1 or 0), then checks that against 19, which is always true.", "That leaves out 13 and 19, but \"inclusive\" means they count."]},
  {q:"Which loop always runs its body at least once?",o:["for","while","do-while"],a:2,w:"do-while checks the condition after the body.",x:["A for loop checks its condition first, so it can run zero times.", "A while loop checks its condition first, so it can run zero times.", ""]},
- {q:"int n = 3; while (n > 0) { cout << n; } What happens?",o:["Prints 321","Prints 3 once","Infinite loop: n never changes","Compile error"],a:2,w:"The body must change something that makes the condition false eventually.",x:["That would need n-- in the body. Without it, n stays 3.", "After printing, n > 0 is still true, so it prints 3 again, forever.", "", "The code is valid C++. The bug is in the logic."]}
+ {q:"int n = 3; while (n > 0) { cout << n; } What happens?",o:["Prints 321","Prints 3 once","Infinite loop: n never changes","Compile error"],a:2,w:"The body must change something that makes the condition false eventually.",x:["That would need n-- in the body. Without it, n stays 3.", "After printing, n > 0 is still true, so it prints 3 again, forever.", "", "The code is valid C++. The bug is in the logic."]},
+ {q:"int mark = 85; if (mark >= 90) cout << \"A\"; else if (mark >= 80) cout << \"B\"; else if (mark >= 70) cout << \"C\"; What prints?",o:["B","A","C","B then C"],a:0,w:"Only one branch runs: the first one whose condition is true. 85 >= 90 is false and 85 >= 80 is true, so it prints B and skips the rest.",x:["", "85 >= 90 is false, so the first branch is skipped.", "85 >= 80 is checked first and is true, so the chain stops before it gets to C.", "Once one branch runs, the rest of the chain is skipped, even though 85 >= 70 is also true."]},
+ {q:"int count = 0; while (count > 0) { cout << count; count--; } How many times does the body run?",o:["1","0","Forever","Compile error"],a:1,w:"A while loop checks its condition before every round. 0 > 0 is false at the start, so the body never runs.",x:["That's do-while behaviour. A while loop checks first, so it can run zero times.", "", "The condition is false at the very start, so the loop never begins.", "It's valid C++. It just never enters the loop."]},
+ {q:"Which condition is true when month is illegal (anything outside 1 to 12)?",o:["month >= 1 && month <= 12","month < 1 && month > 12","month != 1 || month != 12","month < 1 || month > 12"],a:3,w:"|| is true if at least one side is true. A month is illegal if it's too small OR too big.",x:["That's the test for a LEGAL month.", "No number is below 1 and above 12 at the same time, so this is never true.", "Every number is different from 1 or different from 12, so this is always true, even for legal months.", ""]},
+ {q:"In for (int i = 0; i < 5; i++), when does i++ run?",o:["Once, before the loop starts","Before every round, together with the condition","After every round of the body","Only once, when the loop ends"],a:2,w:"The start part runs once. The condition is checked before every round. The update (i++) runs after every round.",x:["That's the start part, int i = 0.", "That's the condition, i < 5.", "", "It runs after every round, not just once at the end."]},
+ {q:"for (int r = 0; r < 3; r++) for (int c = 0; c < 4; c++) cout << \"*\"; How many stars are printed?",o:["7","3","4","12"],a:3,w:"The inner loop runs 4 times for each of the 3 rounds of the outer loop: 3 × 4 = 12.",x:["The counts multiply, they don't add: 3 rounds of 4 stars.", "That's only the outer loop. Each outer round prints 4 stars.", "That's one run of the inner loop. It runs 3 times.", ""]}
 ],
 b3:[
  {q:"What does a void function return?",o:["0","Nothing","An empty string","void"],a:1,w:"void means there is no return value.",x:["0 is a value. A void function returns no value at all.", "", "An empty string is still a value. void means none.", "void isn't a value you can get back. It means \"nothing\"."]},
  {q:"void f(int n) { n = 100; } int x = 1; f(x); What is x now?",o:["100","1","0","Garbage"],a:1,w:"By value: the function changed its own copy only.",x:["n is a copy of x, so changing n doesn't touch x.", "", "Nothing sets x to 0. It keeps its value, 1.", "x was given the value 1 and nothing changes it."]},
  {q:"void f(int& n) { n = 100; } int x = 1; f(x); What is x now?",o:["100","1"],a:0,w:"By reference: n IS x, so x changes.",x:["", "n is a reference: another name for x. Setting n = 100 sets x to 100."]},
  {q:"What is a function declaration (prototype)?",o:["The full function with its body","Just the header line ending in ;, so the compiler knows the function exists","A call to the function","A comment"],a:1,w:"e.g. double area(double w, double h);  The definition with the body can come later.",x:["That's the definition.", "", "A call runs the function, e.g. area(3, 4).", "A comment is ignored by the compiler. A prototype is real code the compiler reads."]},
- {q:"Two functions named average with different parameter lists is called…",o:["Recursion","Overloading","An error","Inheritance"],a:1,w:"The compiler picks the version whose parameters match the call.",x:["Recursion is a function calling itself.", "", "The same name with different parameter lists is allowed.", "Inheritance is about classes, not functions."]}
+ {q:"Two functions named average with different parameter lists is called…",o:["Recursion","Overloading","An error","Inheritance"],a:1,w:"The compiler picks the version whose parameters match the call.",x:["Recursion is a function calling itself.", "", "The same name with different parameter lists is allowed.", "Inheritance is about classes, not functions."]},
+ {q:"double a = area(3.0, 4.5); What are 3.0 and 4.5 called?",o:["Parameters","Return values","Local variables","Arguments"],a:3,w:"Arguments are the actual values in a call. Parameters are the names in the function's header (width and height) that receive them.",x:["Parameters are the names in the definition, like width and height. The values in the call are arguments.", "The return value is what comes back (13.5), which is stored in a.", "Local variables are declared inside the function's body.", ""]},
+ {q:"main() calls area(2, 3). area is defined below main(), and there's no prototype above it. What happens?",o:["Compile error: area hasn't been declared yet","It works: the compiler reads the whole file first","It works, but only for int arguments","It compiles, then crashes when it runs"],a:0,w:"C++ reads top to bottom. Put the prototype double area(double width, double height); above main(), or define area first.",x:["", "The compiler doesn't look ahead. It must already know about area at the call.", "The argument types don't matter. The function simply isn't known yet at that point.", "It never gets to run. The compiler stops first."]},
+ {q:"void swap_values(int& a, int b) { int temp = a; a = b; b = temp; } int p = 1, q = 2; swap_values(p, q); What are p and q now?",o:["p = 2, q = 2","p = 2, q = 1","p = 1, q = 2","p = 1, q = 1"],a:0,w:"Only a is a reference. a = b really sets p to 2. b is a copy, so b = temp only changes the copy, and q stays 2.",x:["", "That needs both parameters to be references. b = temp only changes the copy, so q keeps 2.", "a is a reference, so a = b really sets p to 2.", "p becomes 2 through the reference a, and q is never changed."]},
+ {q:"A function has to give back two answers, like found and location. How?",o:["Write two return statements, one for each","Return both with return found, location;","It's impossible in C++","Use reference parameters for the two answers"],a:3,w:"A function returns at most one value. Reference parameters let it set several of the caller's variables, like found and location in binary search.",x:["The first return ends the function, so the second never runs.", "That's the comma operator. It throws found away and returns only location.", "Reference parameters do exactly this.", ""]},
+ {q:"Two different functions each declare a variable int i. What happens?",o:["Compile error: i is declared twice","They share the same i","No conflict: each function has its own i","The second i overwrites the first"],a:2,w:"Variables declared inside a function are local to it. Each function, and even each call, gets its own fresh copies.",x:["Each function is its own scope, so using the same name in two functions is legal.", "Local variables are never shared between functions.", "", "They're separate boxes in memory, so nothing is overwritten."]}
 ],
 b4:[
  {q:"int a[6]; What is the index of the LAST element?",o:["6","5","1","0"],a:1,w:"Indexes run from 0 to size − 1.",x:["Indexes start at 0, so the 6 elements are 0 to 5. a[6] is one past the end.", "", "1 is the second element.", "0 is the first element."]},
  {q:"What does C++ do if you write a[10] on an array of size 5?",o:["Compile error","Throws an error and stops safely","Nothing stops it: it touches some other memory (undefined behaviour)","Resizes the array"],a:2,w:"C++ doesn't check bounds. That's why boundary errors are dangerous.",x:["The compiler doesn't check indexes, especially ones worked out while the program runs.", "Plain arrays have no bounds checking. (vector's .at() does throw.)", "", "Arrays have a fixed size. They never grow."]},
  {q:"int v = 3; int *p = &v; What is *p?",o:["The address of v","3","p's own address","NULL"],a:1,w:"*p goes to where p points, which is v (3).",x:["That's p itself (or &v). *p follows the address to the value.", "", "That's &p.", "p was set to &v, so it isn't null."]},
  {q:"How do you free memory from double *d = new double[50]; ?",o:["delete d;","delete [] d;","free(d);","d = NULL;"],a:1,w:"Arrays made with new[] are freed with delete [].",x:["Plain delete is for one object. Arrays from new[] need delete [].", "", "free() is for malloc(), not new.", "That only forgets the address. The memory stays allocated (a leak)."]},
- {q:"Why do array functions take a separate size parameter?",o:["Style only","The function only receives the address of the first element, so it can't know the length","Arrays are copied","Required by cout"],a:1,w:"An array parameter carries no length information.",x:["It's needed, not style: the function has no other way to know the length.", "", "Arrays aren't copied. Only the address of the first element is passed.", "cout has nothing to do with it."]}
+ {q:"Why do array functions take a separate size parameter?",o:["Style only","The function only receives the address of the first element, so it can't know the length","Arrays are copied","Required by cout"],a:1,w:"An array parameter carries no length information.",x:["It's needed, not style: the function has no other way to know the length.", "", "Arrays aren't copied. Only the address of the first element is passed.", "cout has nothing to do with it."]},
+ {q:"void fill_with_zero(int a[], int size) sets every a[i] to 0. After fill_with_zero(data, 4); what is data?",o:["Unchanged: the function changed a copy","Only data[0] is 0","All zeros: it changed the caller's array","Compile error: arrays can't be parameters"],a:2,w:"An array parameter gets the address of the first element, not a copy. So changes inside the function change the original.",x:["Arrays aren't copied when they're passed. The function works on the caller's array.", "The loop sets every element from a[0] to a[size - 1].", "", "Arrays can be parameters. You write int a[] and pass the size separately."]},
+ {q:"char name[10] = \"Bob\"; What is strlen(name)?",o:["10","4","3","9"],a:2,w:"strlen counts the characters before the '\\0'. \"Bob\" has 3, even though the array has room for 10.",x:["10 is the array's size. strlen only counts up to the '\\0'.", "4 would count the '\\0' too. strlen doesn't.", "", "9 is the most text the array can hold, leaving one slot for the '\\0'. strlen counts what's actually stored."]},
+ {q:"int scores[SIZE]; for (int i = 0; i <= SIZE; i++) total += scores[i]; What's wrong?",o:["It reads scores[SIZE], one past the end","Nothing: <= is needed to reach the last element","It skips the first element, scores[0]","It loops forever, because i never passes SIZE"],a:0,w:"With <=, the last round has i == SIZE, which is outside the array. Use i < SIZE. This is the classic boundary error.",x:["", "The last element is scores[SIZE - 1], and i < SIZE already reaches it.", "i starts at 0, so scores[0] is included.", "It stops once i is SIZE + 1. It just reads one element too far on the way."]},
+ {q:"Why use new double[size] instead of a normal array?",o:["It's freed automatically when the function ends","It can grow later if it fills up","C++ checks its bounds for you","Its size can be chosen while the program runs"],a:3,w:"A normal array's size has to be known when you declare it. new double[size] can use a size typed in at run time. The cost: you must delete [] it yourself.",x:["The opposite: memory from new stays until you delete [] it. Forget, and it leaks.", "Once it's made, it can't grow either. You'd have to make a bigger one and copy everything over.", "C++ never checks array bounds, whether the array came from new or not.", ""]},
+ {q:"struct Point { int x; int y; }; Point *pp = new Point; Which line sets the x that pp points to?",o:["pp.x = 3;","*pp.x = 3;","Point.x = 3;","pp->x = 3;"],a:3,w:"pp is a pointer, so use -> (or (*pp).x). -> means: go to the struct, then take the member.",x:["pp holds an address, not a struct, so . doesn't work on it.", "The dot runs before the *, so this means *(pp.x), which still uses . on a pointer.", "Point is the type, not an object. Members belong to an object.", ""]}
 ],
 b5:[
  {q:"To find the largest value in an array, biggest should start at…",o:["0","a[0]","-1","size"],a:1,w:"Starting at 0 gives the wrong answer if every value is negative.",x:["If every value is negative, nothing beats 0, and you'd wrongly report 0.", "", "Same problem: if every value is below -1, you'd wrongly report -1.", "size is how many items there are, not a value from the array."]},
  {q:"To count how many items match a rule, the counter starts at…",o:["0","1","a[0]","size"],a:0,w:"Nothing has been counted yet.",x:["", "Starting at 1 counts an item you never checked.", "a[0] is a value from the array, not a count.", "That assumes every item matches before you've checked any."]},
  {q:"Which loop visits every node of a linked list?",o:["for (NodePtr p = head; p != NULL; p = p->link)","for (int i = 0; i < head; i++)","while (head->link)","for (p = head; p->link; p++)"],a:0,w:"Start at head, stop at NULL, follow the link each time.",x:["", "head is a pointer, not a count, and lists have no indexes.", "It stops before visiting the last node, and it crashes on an empty list (head->link when head is NULL).", "p++ moves to the next memory address, not the next node. Nodes are connected by ->link, not stored side by side."]},
- {q:"Which test case is an EDGE case for a function on arrays?",o:["An array of 5 normal numbers","An array of size 0 or 1","A big array","An array of positive numbers"],a:1,w:"Edges: empty, one item, first/last position.",x:["That's a normal, typical case.", "", "Size alone isn't an edge. Edges are the extremes, like empty or one item.", "That's a typical case. A tricky one would be, say, all negative numbers."]}
+ {q:"Which test case is an EDGE case for a function on arrays?",o:["An array of 5 normal numbers","An array of size 0 or 1","A big array","An array of positive numbers"],a:1,w:"Edges: empty, one item, first/last position.",x:["That's a normal, typical case.", "", "Size alone isn't an edge. Edges are the extremes, like empty or one item.", "That's a typical case. A tricky one would be, say, all negative numbers."]},
+ {q:"In the search pattern, index starts at -1. Why?",o:["-1 can't be a real index, so it means not found","Arrays in C++ start at index -1","-1 makes the loop stop at the first element","It's the index of the last element"],a:0,w:"Real indexes are 0 or more. If the loop ends and index is still -1, the target wasn't in the array.",x:["", "C++ arrays start at index 0.", "The loop keeps going while index is -1. It stops once the target is found.", "Some languages, like Python, use -1 for the last element. In C++, a[-1] is outside the array."]},
+ {q:"To multiply all the numbers in an array together, product should start at…",o:["0","-1","1","size"],a:2,w:"Start at a neutral value that doesn't change the answer. For adding that's 0. For multiplying it's 1.",x:["Anything times 0 is 0, so the answer would always be 0.", "-1 would flip the sign of the answer.", "", "size is how many items there are, not a neutral starting value."]},
+ {q:"int count = 0; for (int i = 0; i < size; i++) { if (a[i] < 0) count++; return count; } What's wrong?",o:["count should start at 1, not 0","The if should be outside the loop","a[i] < 0 should be a[i] <= 0","The return is inside the loop"],a:3,w:"The return runs at the end of the first round, so it gives up after checking a[0]. Move return count; to after the loop's closing brace.",x:["Nothing has been counted at the start, so 0 is right.", "The if must be inside the loop so that every item gets checked.", "0 isn't negative, so < 0 is right.", ""]},
+ {q:"In the 6-step recipe, what do you do right after writing the code?",o:["Write the pre- and postcondition comment","Trace it with a normal case and an edge case","Do one example by hand with real numbers","Turn each line of pseudocode into C++"],a:1,w:"Step 6 is tracing: run it on paper with a normal case and an edge case (empty, one item, first or last), then fix what breaks.",x:["That's step 1, before anything else.", "", "That's step 2, before any code.", "That's step 5, which IS writing the code."]},
+ {q:"Which loop goes through an array of size n backwards, from the last element to the first?",o:["for (int i = n; i > 0; i--)","for (int i = n - 1; i > 0; i--)","for (int i = n - 1; i >= 0; i--)","for (int i = 0; i < n; i--)"],a:2,w:"The last index is n - 1 and the first is 0. So start at n - 1 and keep going while i >= 0.",x:["It starts at a[n], one past the end, and never reaches a[0].", "i > 0 stops before it gets to a[0].", "", "Counting down from 0 goes to -1, -2 and so on, which are outside the array."]},
+ {q:"A recursive sum(a, n) adds up the first n items. Which is a correct base case?",o:["if (n == 0) return 0;","if (n == 0) return a[0];","if (n == 1) return 0;","It doesn't need a base case"],a:0,w:"The sum of zero items is 0, and there's nothing left to add.",x:["", "With n == 0 there are no items, so a[0] isn't part of the sum.", "With one item the sum is a[0], not 0.", "Without a base case the calls never stop, and the program crashes."]}
 ]
 });
 </script>
@@ -5583,25 +5707,49 @@ function applyMode(m){
 }
 
 /* ---------- quiz component ---------- */
+// Back, Skip/Next and the dots move freely between questions. An answered question stays answered and
+// shows its explanation again. The score is offered once every question has an answer.
 function buildQuiz(items, o){
   const el = document.createElement("div"); el.className = "qz"; if (o.id) el.id = o.id;
-  let order = [], i = 0, res = [], picks = [];
+  let order = [], i = 0, res = [], picks = [], atEnd = false;
+  const left = ()=>order.filter((_,k)=>res[k]===undefined).length;
   function head(){
-    return '<div class="qz-h"><span class="si">'+I("check")+'</span><div><b>'+esc(o.title)+'</b><small>'+esc(o.sub || (order.length+" questions · every answer explained"))+'</small></div><div class="qz-dots" aria-hidden="true">'+
-      order.map((_,k)=>'<i class="'+(res[k]===true?'r':res[k]===false?'w':(k===i?'cur':''))+'"></i>').join("")+'</div></div>';
+    return '<div class="qz-h"><span class="si">'+I("check")+'</span><div><b>'+esc(o.title)+'</b><small>'+esc(o.sub || (order.length+" questions · every answer explained"))+'</small></div><div class="qz-dots" role="group" aria-label="Go to a question">'+
+      order.map((_,k)=>'<button type="button" data-qn="'+k+'"'+(!atEnd && k===i ? ' aria-current="step"' : '')+' aria-label="Question '+(k+1)+(res[k]===true?', right':res[k]===false?', wrong':', not answered')+'"><i'+(res[k]===true?' class="r"':res[k]===false?' class="w"':'')+'></i></button>').join("")+'</div></div>';
+  }
+  function feedback(it, k){
+    return k === it.a ? '<b class="y">Correct.</b> ' + esc(it.w)
+      : '<p><b class="n">Not quite.</b> You picked <b>'+esc(it.o[k])+'</b>'+(it.x && it.x[k] ? ': '+esc(it.x[k]) : '.')+'</p>'+
+        '<p><b class="y">The answer is '+esc(it.o[it.a])+'.</b> '+esc(it.w)+'</p>';
+  }
+  function actions(){
+    const n = order.length, done = res[i] !== undefined;
+    let to = i < n-1 ? i+1 : -1;   // forward goes to the next question; from the last one, back to the first one still open
+    if (to < 0) for (let k = 0; k < n; k++) if (res[k]===undefined && k!==i){ to = k; break; }
+    return '<button type="button" class="btn qz-prev"'+(i===0 ? ' disabled' : '')+'>'+I("arrow-l")+'Back</button>' +
+      (to < 0 ? '' : '<button type="button" class="btn'+(done && left() ? ' pri' : '')+'" data-qn="'+to+'">'+(!done ? 'Skip' : i < n-1 ? 'Next' : 'Next unanswered')+I("arrow-r")+'</button>') +
+      (left() ? '' : '<button type="button" class="btn pri qz-done">See my score</button>');
   }
   function render(){
-    if (i >= order.length){ end(); return; }
-    const it = order[i];
-    el.innerHTML = head() + '<div class="qz-b"><div class="qz-n">Question '+(i+1)+' of '+order.length+'</div><div class="qz-q">'+esc(it.q)+'</div><div class="qz-opts">'+
-      it.o.map((t,k)=>'<button type="button" class="qz-o" data-k="'+k+'"><span class="lt">'+"ABCDEF"[k]+'</span><span>'+esc(t)+'</span></button>').join("")+
-      '</div><div class="qz-fb" hidden></div><div class="qz-act"><button type="button" class="btn pri qz-next" hidden>'+(i===order.length-1?'See my score':'Next question')+I("arrow-r")+'</button></div></div>';
+    atEnd = false;
+    const it = order[i], k = picks[i], done = res[i] !== undefined;
+    el.innerHTML = head() + '<div class="qz-b"><div class="qz-n">Question '+(i+1)+' of '+order.length+'</div><div class="qz-q" tabindex="-1">'+esc(it.q)+'</div><div class="qz-opts">'+
+      it.o.map((t,j)=>'<button type="button" class="qz-o'+(done && j===it.a ? ' right' : done && j===k ? ' wrong' : '')+'" data-k="'+j+'"'+(done ? ' disabled' : '')+'><span class="lt">'+"ABCDEF"[j]+'</span><span>'+esc(t)+'</span></button>').join("")+
+      '</div>'+(done ? '<div class="qz-fb">'+feedback(it, k)+'</div>' : '')+'<div class="qz-act">'+actions()+'</div></div>';
   }
+  // after a move, bring the top of the card back on screen if it has scrolled up under the top bar
+  function reveal(){
+    const bar = $(".topbar"), barB = bar && bar.offsetParent !== null ? bar.getBoundingClientRect().bottom : 0, top = el.getBoundingClientRect().top;
+    if (top < barB) window.scrollBy({top: top - barB - 8, left: 0, behavior: "instant"});
+  }
+  function go(k){ i = k; render(); reveal(); try{ $(".qz-q", el).focus({preventScroll:true}); }catch(_){} }
   function end(){
+    atEnd = true;
     const r = res.filter(Boolean).length, n = order.length, missed = order.filter((_,k)=>res[k]===false);
-    if (o.key && n === items.length){ const b = best[o.key]; if (!b || r >= b.r){ best[o.key] = {r, n}; store.set("best", best); refresh(); } }
+    // a best saved when the quiz had a different number of questions is replaced by the first full run
+    if (o.key && n === items.length){ const b = best[o.key]; if (!b || b.n !== n || r >= b.r){ best[o.key] = {r, n}; store.set("best", best); refresh(); } }
     const msg = r===n ? "Perfect. You've got this chapter." : r >= n*0.7 ? "Nice work. Read the explanations for the ones you missed." : "Worth another read. Try the Quick version again, then retry.";
-    el.innerHTML = head() + '<div class="qz-b"><div class="qz-end"><div class="qz-score">'+r+'<small> / '+n+'</small></div><div class="qz-msg">'+msg+'</div><div class="qz-act" style="justify-content:center">'+
+    el.innerHTML = head() + '<div class="qz-b"><div class="qz-end" tabindex="-1"><div class="qz-score">'+r+'<small> / '+n+'</small></div><div class="qz-msg">'+msg+'</div><div class="qz-act" style="justify-content:center">'+
       (missed.length ? '<button type="button" class="btn qz-wrong">Redo the ones I missed</button>' : '') +
       (o.onNew ? '<button type="button" class="btn pri qz-new">New set of questions</button>' : '<button type="button" class="btn pri qz-retry">Start again</button>') + '</div></div>' +
       (missed.length ? '<div class="qz-miss">'+order.map((m,k)=>res[k]!==false ? '' : '<div><b>'+esc(m.q)+'</b>'+
@@ -5612,18 +5760,13 @@ function buildQuiz(items, o){
   el.addEventListener("click", e=>{
     const ob = e.target.closest(".qz-o");
     if (ob && !ob.disabled){
-      const it = order[i], k = +ob.dataset.k, ok = k === it.a; res[i] = ok; picks[i] = k;
-      $$(".qz-o", el).forEach(b=>{ b.disabled = true; if (+b.dataset.k === it.a) b.classList.add("right"); });
-      if (!ok) ob.classList.add("wrong");
-      const fb = $(".qz-fb", el); fb.hidden = false;
-      fb.innerHTML = ok ? '<b class="y">Correct.</b> ' + esc(it.w)
-        : '<p><b class="n">Not quite.</b> You picked <b>'+esc(it.o[k])+'</b>'+(it.x && it.x[k] ? ': '+esc(it.x[k]) : '.')+'</p>'+
-          '<p><b class="y">The answer is '+esc(it.o[it.a])+'.</b> '+esc(it.w)+'</p>';
-      const dots = $$(".qz-dots i", el); if (dots[i]) dots[i].className = ok ? "r" : "w";
-      const nx = $(".qz-next", el); nx.hidden = false; try{ nx.focus({preventScroll:true}); }catch(_){}
+      picks[i] = +ob.dataset.k; res[i] = picks[i] === order[i].a; render();
+      try{ $(".qz-act .pri", el).focus({preventScroll:true}); }catch(_){}
       return;
     }
-    if (e.target.closest(".qz-next")){ i++; render(); return; }
+    const to = e.target.closest("[data-qn]"); if (to){ go(+to.dataset.qn); return; }
+    if (e.target.closest(".qz-prev")){ go(i-1); return; }
+    if (e.target.closest(".qz-done")){ end(); reveal(); try{ $(".qz-end", el).focus({preventScroll:true}); }catch(_){} return; }
     if (e.target.closest(".qz-retry")){ start(items.slice()); return; }
     if (e.target.closest(".qz-wrong")){ start(order.filter((_,k)=>res[k]===false)); return; }
     if (e.target.closest(".qz-new") && o.onNew){ start(o.onNew()); }
