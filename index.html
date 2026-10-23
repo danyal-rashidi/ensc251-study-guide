@@ -252,13 +252,15 @@ select.in{width:auto}
 
 /* quiz */
 .qz{background:var(--surface);border:1px solid var(--line);border-radius:16px;margin:28px 0 0;box-shadow:var(--shadow);overflow:hidden;scroll-margin-top:24px}
-.qz-h{display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line)}
+.qz-h{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--line)}
 .qz-h .si{width:36px;height:36px;border-radius:10px;display:grid;place-items:center;background:var(--key-soft);color:var(--key);flex:none}
 .qz-h b{display:block;font-family:var(--f-display);font-size:1.12rem;font-weight:700}
 .qz-h small{display:block;color:var(--muted);font-size:13px}
-.qz-dots{margin-left:auto;display:flex;gap:5px}
-.qz-dots i{width:9px;height:9px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--line-2)}
-.qz-dots i.cur{border-color:var(--accent)}
+.qz-dots{margin-left:auto;display:flex}
+.qz-dots button{all:unset;box-sizing:border-box;cursor:pointer;width:24px;height:24px;display:grid;place-items:center;border-radius:7px}
+.qz-dots i{width:10px;height:10px;border-radius:50%;background:var(--surface-2);border:1.5px solid var(--line-2)}
+.qz-dots button:hover i{border-color:var(--accent)}
+.qz-dots [aria-current] i{box-shadow:0 0 0 2px var(--surface),0 0 0 3.5px var(--accent)}
 .qz-dots i.r{background:var(--good);border-color:var(--good)}
 .qz-dots i.w{background:var(--bad);border-color:var(--bad)}
 .qz-b{padding:18px 20px 20px}
@@ -274,7 +276,9 @@ select.in{width:auto}
 .qz-fb{margin-top:12px;padding:11px 14px;border-radius:10px;background:var(--surface-2);font-size:.95rem;line-height:1.55}
 .qz-fb b.y{color:var(--good)} .qz-fb b.n{color:var(--bad)}
 .qz-fb p{margin:0} .qz-fb p+p{margin-top:8px}
-.qz-act{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.qz-act{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:14px}
+.qz-prev{margin-right:auto}
+.qz .btn:focus-visible,.qz-o:focus-visible,.qz-dots button:focus-visible{outline:2.5px solid var(--accent);outline-offset:2px}
 .qz-end{text-align:center;padding:10px 0 4px}
 .qz-score{font-family:var(--f-display);font-size:2.6rem;font-weight:800;line-height:1}
 .qz-score small{font-size:1.1rem;color:var(--muted);font-weight:600}
@@ -399,7 +403,6 @@ select.in{width:auto}
   .pnc.nx{text-align:left;align-items:flex-start}
   .pnc.empty{display:none}
   .qz-b{padding:16px}
-  .qz-h{flex-wrap:wrap}
   .qz-dots{flex-basis:100%;padding-left:48px}
   .cheatgrp dl{grid-template-columns:minmax(0,1fr)}
   .cheatgrp dd{border-top:0;padding-top:0}
@@ -5704,26 +5707,49 @@ function applyMode(m){
 }
 
 /* ---------- quiz component ---------- */
+// Back, Skip/Next and the dots move freely between questions. An answered question stays answered and
+// shows its explanation again. The score is offered once every question has an answer.
 function buildQuiz(items, o){
   const el = document.createElement("div"); el.className = "qz"; if (o.id) el.id = o.id;
-  let order = [], i = 0, res = [], picks = [];
+  let order = [], i = 0, res = [], picks = [], atEnd = false;
+  const left = ()=>order.filter((_,k)=>res[k]===undefined).length;
   function head(){
-    return '<div class="qz-h"><span class="si">'+I("check")+'</span><div><b>'+esc(o.title)+'</b><small>'+esc(o.sub || (order.length+" questions · every answer explained"))+'</small></div><div class="qz-dots" aria-hidden="true">'+
-      order.map((_,k)=>'<i class="'+(res[k]===true?'r':res[k]===false?'w':(k===i?'cur':''))+'"></i>').join("")+'</div></div>';
+    return '<div class="qz-h"><span class="si">'+I("check")+'</span><div><b>'+esc(o.title)+'</b><small>'+esc(o.sub || (order.length+" questions · every answer explained"))+'</small></div><div class="qz-dots" role="group" aria-label="Go to a question">'+
+      order.map((_,k)=>'<button type="button" data-qn="'+k+'"'+(!atEnd && k===i ? ' aria-current="step"' : '')+' aria-label="Question '+(k+1)+(res[k]===true?', right':res[k]===false?', wrong':', not answered')+'"><i'+(res[k]===true?' class="r"':res[k]===false?' class="w"':'')+'></i></button>').join("")+'</div></div>';
+  }
+  function feedback(it, k){
+    return k === it.a ? '<b class="y">Correct.</b> ' + esc(it.w)
+      : '<p><b class="n">Not quite.</b> You picked <b>'+esc(it.o[k])+'</b>'+(it.x && it.x[k] ? ': '+esc(it.x[k]) : '.')+'</p>'+
+        '<p><b class="y">The answer is '+esc(it.o[it.a])+'.</b> '+esc(it.w)+'</p>';
+  }
+  function actions(){
+    const n = order.length, done = res[i] !== undefined;
+    let to = i < n-1 ? i+1 : -1;   // forward goes to the next question; from the last one, back to the first one still open
+    if (to < 0) for (let k = 0; k < n; k++) if (res[k]===undefined && k!==i){ to = k; break; }
+    return '<button type="button" class="btn qz-prev"'+(i===0 ? ' disabled' : '')+'>'+I("arrow-l")+'Back</button>' +
+      (to < 0 ? '' : '<button type="button" class="btn'+(done && left() ? ' pri' : '')+'" data-qn="'+to+'">'+(!done ? 'Skip' : i < n-1 ? 'Next' : 'Next unanswered')+I("arrow-r")+'</button>') +
+      (left() ? '' : '<button type="button" class="btn pri qz-done">See my score</button>');
   }
   function render(){
-    if (i >= order.length){ end(); return; }
-    const it = order[i];
-    el.innerHTML = head() + '<div class="qz-b"><div class="qz-n">Question '+(i+1)+' of '+order.length+'</div><div class="qz-q">'+esc(it.q)+'</div><div class="qz-opts">'+
-      it.o.map((t,k)=>'<button type="button" class="qz-o" data-k="'+k+'"><span class="lt">'+"ABCDEF"[k]+'</span><span>'+esc(t)+'</span></button>').join("")+
-      '</div><div class="qz-fb" hidden></div><div class="qz-act"><button type="button" class="btn pri qz-next" hidden>'+(i===order.length-1?'See my score':'Next question')+I("arrow-r")+'</button></div></div>';
+    atEnd = false;
+    const it = order[i], k = picks[i], done = res[i] !== undefined;
+    el.innerHTML = head() + '<div class="qz-b"><div class="qz-n">Question '+(i+1)+' of '+order.length+'</div><div class="qz-q" tabindex="-1">'+esc(it.q)+'</div><div class="qz-opts">'+
+      it.o.map((t,j)=>'<button type="button" class="qz-o'+(done && j===it.a ? ' right' : done && j===k ? ' wrong' : '')+'" data-k="'+j+'"'+(done ? ' disabled' : '')+'><span class="lt">'+"ABCDEF"[j]+'</span><span>'+esc(t)+'</span></button>').join("")+
+      '</div>'+(done ? '<div class="qz-fb">'+feedback(it, k)+'</div>' : '')+'<div class="qz-act">'+actions()+'</div></div>';
   }
+  // after a move, bring the top of the card back on screen if it has scrolled up under the top bar
+  function reveal(){
+    const bar = $(".topbar"), barB = bar && bar.offsetParent !== null ? bar.getBoundingClientRect().bottom : 0, top = el.getBoundingClientRect().top;
+    if (top < barB) window.scrollBy({top: top - barB - 8, left: 0, behavior: "instant"});
+  }
+  function go(k){ i = k; render(); reveal(); try{ $(".qz-q", el).focus({preventScroll:true}); }catch(_){} }
   function end(){
+    atEnd = true;
     const r = res.filter(Boolean).length, n = order.length, missed = order.filter((_,k)=>res[k]===false);
     // a best saved when the quiz had a different number of questions is replaced by the first full run
     if (o.key && n === items.length){ const b = best[o.key]; if (!b || b.n !== n || r >= b.r){ best[o.key] = {r, n}; store.set("best", best); refresh(); } }
     const msg = r===n ? "Perfect. You've got this chapter." : r >= n*0.7 ? "Nice work. Read the explanations for the ones you missed." : "Worth another read. Try the Quick version again, then retry.";
-    el.innerHTML = head() + '<div class="qz-b"><div class="qz-end"><div class="qz-score">'+r+'<small> / '+n+'</small></div><div class="qz-msg">'+msg+'</div><div class="qz-act" style="justify-content:center">'+
+    el.innerHTML = head() + '<div class="qz-b"><div class="qz-end" tabindex="-1"><div class="qz-score">'+r+'<small> / '+n+'</small></div><div class="qz-msg">'+msg+'</div><div class="qz-act" style="justify-content:center">'+
       (missed.length ? '<button type="button" class="btn qz-wrong">Redo the ones I missed</button>' : '') +
       (o.onNew ? '<button type="button" class="btn pri qz-new">New set of questions</button>' : '<button type="button" class="btn pri qz-retry">Start again</button>') + '</div></div>' +
       (missed.length ? '<div class="qz-miss">'+order.map((m,k)=>res[k]!==false ? '' : '<div><b>'+esc(m.q)+'</b>'+
@@ -5734,18 +5760,13 @@ function buildQuiz(items, o){
   el.addEventListener("click", e=>{
     const ob = e.target.closest(".qz-o");
     if (ob && !ob.disabled){
-      const it = order[i], k = +ob.dataset.k, ok = k === it.a; res[i] = ok; picks[i] = k;
-      $$(".qz-o", el).forEach(b=>{ b.disabled = true; if (+b.dataset.k === it.a) b.classList.add("right"); });
-      if (!ok) ob.classList.add("wrong");
-      const fb = $(".qz-fb", el); fb.hidden = false;
-      fb.innerHTML = ok ? '<b class="y">Correct.</b> ' + esc(it.w)
-        : '<p><b class="n">Not quite.</b> You picked <b>'+esc(it.o[k])+'</b>'+(it.x && it.x[k] ? ': '+esc(it.x[k]) : '.')+'</p>'+
-          '<p><b class="y">The answer is '+esc(it.o[it.a])+'.</b> '+esc(it.w)+'</p>';
-      const dots = $$(".qz-dots i", el); if (dots[i]) dots[i].className = ok ? "r" : "w";
-      const nx = $(".qz-next", el); nx.hidden = false; try{ nx.focus({preventScroll:true}); }catch(_){}
+      picks[i] = +ob.dataset.k; res[i] = picks[i] === order[i].a; render();
+      try{ $(".qz-act .pri", el).focus({preventScroll:true}); }catch(_){}
       return;
     }
-    if (e.target.closest(".qz-next")){ i++; render(); return; }
+    const to = e.target.closest("[data-qn]"); if (to){ go(+to.dataset.qn); return; }
+    if (e.target.closest(".qz-prev")){ go(i-1); return; }
+    if (e.target.closest(".qz-done")){ end(); reveal(); try{ $(".qz-end", el).focus({preventScroll:true}); }catch(_){} return; }
     if (e.target.closest(".qz-retry")){ start(items.slice()); return; }
     if (e.target.closest(".qz-wrong")){ start(order.filter((_,k)=>res[k]===false)); return; }
     if (e.target.closest(".qz-new") && o.onNew){ start(o.onNew()); }
